@@ -39,12 +39,14 @@
 
 
 1. **Supervised** - Feature Selection
-   - Genetic Algorithm
+   - ❌Forward, Backward, Stepwise Selection
+   - ✅Genetic Algorithm
 2. **Unsupervised** - Feature Extraction
-   1. MDS (Multidimensional scaling)
-   2. LLE
-   3. ISOMAP
-   4. t-SNE
+   1. ❌PCA
+   2. ✅MDS (Multidimensional scaling)
+   3. ✅LLE
+   4. ✅ISOMAP
+   5. ✅t-SNE
 
 
 
