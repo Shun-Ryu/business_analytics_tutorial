@@ -8,7 +8,7 @@
 - [Overview](#1.-Overview)
 - [Supervised - Feature Selection](2.-Supervised---Feature Selection)
 
-  - [Genetic Algorithm](#Genetic-Algorithm)
+  - [Genetic Algorithm](#"1) Genetic Algorithm")
 
 - Unsupervised - Feature Extraction
 
@@ -23,7 +23,7 @@
 
 # 1. Overview
 
-## 1-1) Problem
+## 1) Problem
 
 1) Tabular Data에도 물론 High-Dimensional Data가 있으나, 최근에 많이 사용되는 비정형 Data인 Image, Natural Language Data들은 대부분 아주 높은 데이터 차원을 가지고 있다. 차원이 높아지게 되면 차원의 저주(Curse of dimensionality)에 빠지게 되는데, 차원이 높아질수록 Machine Learning 알고리즘의 학습이 어려워지고(Noise Data가 증가 등), 연산량도 매우 높아지는 경향이 있다. 또한 고차원 데이터에서는 모델의 Generalization 성능을 높이기 위해서 더 많은 수의 Data가 일반적으로 더 필요하게 된다.
 
@@ -31,7 +31,7 @@
 
    
 
-## 1-2) Solution
+## 2) Solution
 
 이 두가지 문제(ML 알고리즘 성능의 문제 및 Visualization의 문제)를 해결하기 위해, 많은 연구원, 엔지니어들이 다양한 차원 감소 기법(Dimensionality Reduction)을 개발 해 왔다.
 
@@ -61,11 +61,11 @@
 
 
 
-# 2. Supervised - Feature Selection
+# 2. Supervised (Feature Selection)
 
 
 
-## 2-1) Genetic Algorithm
+## 1) Genetic Algorithm
 
 ### Notebook Tutorial
 
@@ -331,7 +331,7 @@ best_parent_chromosome = candidate_parent_chromosome[best_index]
 
 
 
-# Unsupervised - Feature Extraction
+# 3. Unsupervised (Feature Extraction)
 
 ## MDS (Multidimensional scaling)
 
