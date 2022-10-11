@@ -2,6 +2,9 @@
 
 
 
+#### Author : 고려대학교 산업경영공학과 DSBA Lab. 류승훈 ([seunghun_yu@korea.ac.kr](seunghun_yu@korea.ac.kr))
+
+
 
 # Table of contents
 
