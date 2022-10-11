@@ -5,8 +5,8 @@
 
 # Table of contents
 
-- [Overview](#1.-Overview)
-- [Supervised - Feature Selection](2.-Supervised---Feature Selection)
+- [Overview](#Overview)
+- [Supervised - Feature Selection](#Supervised-(Feature-Selection))
 
   - [Genetic Algorithm](#Genetic-Algorithm)
 
@@ -21,7 +21,7 @@
 
 
 
-# 1. Overview
+# Overview
 
 ## 1) Problem
 
@@ -61,7 +61,7 @@
 
 
 
-# 2. Supervised (Feature Selection)
+# Supervised (Feature Selection)
 
 
 
