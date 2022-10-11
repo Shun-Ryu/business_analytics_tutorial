@@ -820,10 +820,13 @@ P = np.maximum(P, 1e-12)
 밑의 2~4까지의 step을 iteration을 돌며 반복한다.
 
 - Step 2. q Matrix를 구한다. (저차원에서 t-Distribution으로 Fitting해야 할 분포)
+  - ![image-20221012025356233](./assets/image-20221012025356233.png)
 
 - Step 3.  Gradient를 계산한다.
+  - ![image-20221012025525533](./assets/image-20221012025525533.png)
 
 - Step 4. Gradient(dC/dy)를 통하여 Y값(좌표값)을 업데이트 해 준다.
+  - ![image-20221012025609588](./assets/image-20221012025609588.png)
 
 
 
