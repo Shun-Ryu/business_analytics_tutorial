@@ -70,7 +70,7 @@
 
 ### Notebook Tutorial
 
-- [Go to the tutorial]() 
+- [Go to the tutorial](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/1_dimensionality_reduction/1_Genetic_Algorithm/genetic_algorithm_for_feature_selection.ipynb) 
 - [Reference Code](https://github.com/prakhargurawa/Feature-Selection-Using-Genetic-Algorithm) 
 
 
@@ -342,7 +342,7 @@ Unsupervised Feature Extraction은 Selection과 달리 Label이 없는 상태에
 
 ### Notebook Tutorial
 
-- [Go to the tutorial]() 
+- [Go to the tutorial](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/1_dimensionality_reduction/2_MDS/mds_tutorial.ipynb) 
 - [Reference Code](https://gist.github.com/Bollegala/24c5f6d9a5c9770c86f24316e8b170fd) 
 
 
@@ -459,7 +459,7 @@ print(X)
 
 ### Notebook Tutorial
 
-- [Go to the tutorial]() 
+- [Go to the tutorial](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/1_dimensionality_reduction/3_ISOMAP/isomap.ipynb) 
 - [Reference Code](https://github.com/lwileczek/isomap) 
 
 
@@ -557,7 +557,7 @@ def MDS(d, dim, m):
 
 ### Notebook Tutorial
 
-- [Go to the tutorial]() 
+- [Go to the tutorial](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/1_dimensionality_reduction/4_LLE/LLE.ipynb) 
 - [Reference Code](https://github.com/JAVI897/LLE-and-its-variants)
 
 
@@ -668,7 +668,7 @@ self.Y = eigvec[:, 1:self.dim +1]
 
 ### Notebook Tutorial
 
-- [Go to the tutorial]() 
+- [Go to the tutorial](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/1_dimensionality_reduction/5_t-SNE/t-SNE.ipynb) 
 - [Reference Code](https://lvdmaaten.github.io/tsne/) 
 
 
