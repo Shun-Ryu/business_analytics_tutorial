@@ -8,7 +8,7 @@
 - [Overview](#1.-Overview)
 - [Supervised - Feature Selection](2.-Supervised---Feature Selection)
 
-  - [Genetic Algorithm](#"1) Genetic Algorithm")
+  - [Genetic Algorithm](#Genetic-Algorithm)
 
 - Unsupervised - Feature Extraction
 
@@ -65,7 +65,7 @@
 
 
 
-## 1) Genetic Algorithm
+## Genetic Algorithm
 
 ### Notebook Tutorial
 
