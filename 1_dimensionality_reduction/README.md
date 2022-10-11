@@ -5,7 +5,7 @@
 
 # Table of contents
 
-- [Overview](#Overview)
+- [Overview](#1.-Overview)
 - Supervised - Feature Selection
 
   - Genetic Algorithm
