@@ -6,9 +6,9 @@
 # Table of contents
 
 - [Overview](#1.-Overview)
-- Supervised - Feature Selection
+- [Supervised - Feature Selection](2.-Supervised---Feature Selection)
 
-  - Genetic Algorithm
+  - [Genetic Algorithm](#Genetic-Algorithm)
 
 - Unsupervised - Feature Extraction
 
