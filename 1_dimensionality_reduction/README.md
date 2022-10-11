@@ -6,15 +6,16 @@
 # Table of contents
 
 - [Overview](#Overview)
-- [Supervised - Feature Selection](#Supervised-(Feature-Selection))
+
+- [Supervised Feature Selection](#Supervised-Feature-Selection)
 
   - [Genetic Algorithm](#Genetic-Algorithm)
 
-- Unsupervised - Feature Extraction
+- [Unsupervised Feature Extraction](#Unsupervised-Feature-Extraction)
 
-  - MDS (Multidimensional scaling)
+  - [MDS](#MDS)
+  - [ISOMAP](#ISOMAP)
   - LLE
-  - ISOMAP
   - t-SNE
 
   
@@ -235,7 +236,7 @@ parent_chromosome_index = np.array(scores_chromosome).argsort()[-num_determinist
 
 
 
-<u>Crossover</u>
+##### 5-1) Crossover
 
 선택된 부모 Chromosome들을 2개를 선택하여, 각각의 유전자 정보를 교환한다. (출처 : [고려대학교 산업경영공학부 강필성 교수님 Business Analytics 수업교재](https://www.dropbox.com/s/hnpfo9kmdovs3kp/01_2_Dimensionality%20Reduction_Genetic%20Algorithm.pdf))
 
@@ -267,7 +268,7 @@ c2 = []
 
 
 
-<u>Mutation</u>
+##### 5-2) Mutation
 
 Crossover로 생성된 새로운 Child Chromosome에 대하여 Random하게 값을 Flip한다.
 
@@ -331,13 +332,204 @@ best_parent_chromosome = candidate_parent_chromosome[best_index]
 
 
 
-# 3. Unsupervised (Feature Extraction)
+# Unsupervised Feature Extraction
 
-## MDS (Multidimensional scaling)
+Unsupervised Feature Extraction은 Selection과 달리 Label이 없는 상태에서, X값을 변환하여 차원을 축소하는 기법이다.
 
-## LLE
+
+
+## MDS
+
+MDS는 Multidimensional Scaling의 약자로써, PCA처럼 선형 차원축소 기법이다. 하지만 Distance Matrix만 있으면 진행할 수 있으므로, PCA보다 활용의 자유도가 높은 편이며, 향후 진행될 ISOMAP의 기본 로직이 되는 알고리즘이다.
+
+
+
+### Notebook Tutorial
+
+- [Go to the tutorial]() 
+- [Reference Code](https://gist.github.com/Bollegala/24c5f6d9a5c9770c86f24316e8b170fd) 
+
+
+
+#### Step 1. Distance Matrix 구하기
+
+기본적으로 Raw Data (X Matrix)에서 Distance Matrix를 구한다. Distance Matrix는 다양한 수식을 사용할 수 있으며, Euclidean, Manhattan 거리라던지, Correlation등의 Similarity도 사용 가능하다.
+
+
+
+아래 그림과 같이 d x n Matrix는 n x n Matrix로 변환하여 구한다. (출처 : [고려대학교 산업경영공학부 강필성 교수님 Business Analytics 수업교재](https://www.dropbox.com/s/hnpfo9kmdovs3kp/01_2_Dimensionality%20Reduction_Genetic%20Algorithm.pdf))
+
+![image-20221012020722937](./assets/image-20221012020722937.png)
+
+
+
+Python코드로 Distance Matrix를 구하면 아래와 같다. (Data는 3개 사용한다.)
+
+```python
+# 1. 3개의 Data를 정의합니다. 각각들의 Dimension은 알려져있지 않고, 단지 Similarity(or Distnace) Metric으로 거리가 계산된, Distance Matrix를 갖고 있습니다.
+n = 3  
+Y = numpy.array([[20, 18], [2, 13], [7, 24]], dtype=float)
+
+D = numpy.zeros((n, n), dtype=float)
+
+for i in range(0, n):
+    for j in range(0, n):
+        D[i, j] = numpy.linalg.norm(Y[i,:] - Y[j,:]) # L2-Nrom으로 정규화 합니다.
+
+print("Distance Matrix D")
+print(D)
+```
+
+
+
+
+
+#### Step 2. Distance Matrix를 사용해 B Matrix를 구한다.
+
+Distance Matrix를 사용하여, 바로 Dimensionality Reduction된 좌표계로 변환은 힘들다. 따라서 B Matrix라는 중간 다리를 만들어서 최종 줄어든 좌표계로 변환을 진행한다.
+
+B Matrix는 Distance Matrix D를 통해 아래의 수식으로 계산할 수 있다. (출처 : [고려대학교 산업경영공학부 강필성 교수님 Business Analytics 수업교재](https://www.dropbox.com/s/hnpfo9kmdovs3kp/01_2_Dimensionality%20Reduction_Genetic%20Algorithm.pdf))
+
+![image-20221012021022899](./assets/image-20221012021022899.png)
+
+
+
+Python Code로 구현하면 아래와 같다.
+
+```python
+def bval(D, r, s):
+    n = D.shape[0]
+    total_r = numpy.sum(D[:,s] ** 2)
+    total_s = numpy.sum(D[r,:] ** 2)
+    total = numpy.sum(D ** 2)
+    val = (D[r,s] ** 2) - (float(total_r) / float(n)) - (float(total_s) / float(n)) + (float(total) / float(n * n))
+    return -0.5 * val
+```
+
+
+
+
+
+#### Step 3. B Matrix에서 Eigen Value와 Eigen Vector를 구하고, 이를 통해 좌표를 변환한다.
+
+좌표변환의 수식은 다음과 같다.  (출처 : [고려대학교 산업경영공학부 강필성 교수님 Business Analytics 수업교재](https://www.dropbox.com/s/hnpfo9kmdovs3kp/01_2_Dimensionality%20Reduction_Genetic%20Algorithm.pdf))
+
+
+
+아래의 수식과 같이, B Matrix는 X와 X^T의 Inner Product로 구할 수 있고, 
+
+![image-20221012021259367](./assets/image-20221012021259367.png)
+
+이는 B는 symmetric, positive, semi-definite and of rank p이므로 다음과 같이 eigen value와 eigen vector로 표현 가능하다. (eigen-decomposition)
+
+![image-20221012021307041](./assets/image-20221012021307041.png)
+
+이를 통해 그 Half인 X를 구할 수 있으며, 최종적으로 변환된 X의 좌표는 아래와 같다.
+
+![image-20221012021313079](./assets/image-20221012021313079.png)
+
+이를 코드로 구현하면 아래와 같다.
+
+```python
+# 3. B에서 Eigen Vector와 Eigen Value를 구합니다.
+a, V = numpy.linalg.eig(B)
+idx = a.argsort()[::-1]
+a = a[idx]
+V = V[:,idx]
+print("Eigen Values =", a)
+print("Eigen vectors=", V)
+
+A = numpy.diag(numpy.sqrt(a))
+X = numpy.dot(V, A)
+
+print("\nMatrix A")
+print(A)
+
+print("\nMatrix X")
+print(X)
+```
+
+
+
+
 
 ## ISOMAP
+
+ISOMAP은 Isometric Feature Mapping의 약자이며, 비선형 차원축소 기법이다. 기본적으로 MDS를 Base로 하는데, Distance를 Nearest neighbor를 통하여 구하고, 이를 잇는 Shortest Path를 통해 Distance Matrix를 구한다. 그 구해진 Distance Matrix를 통해 MDS로 차원을 축소하게된다.
+
+Step 1, 2를 통해 Distance(D) Matrix를 만들고 Step 3에서 MDS를 사용해 Dimensionality를 Reduction한다.
+
+
+
+ISOMAP의 Concept을 도식화하면 아래와 같다. (출처 : [고려대학교 산업경영공학부 강필성 교수님 Business Analytics 수업교재](https://www.dropbox.com/s/hnpfo9kmdovs3kp/01_2_Dimensionality%20Reduction_Genetic%20Algorithm.pdf))
+
+![image-20221012022222341](./assets/image-20221012022222341.png)
+
+
+
+### Notebook Tutorial
+
+- [Go to the tutorial]() 
+- [Reference Code](https://github.com/lwileczek/isomap) 
+
+
+
+#### Step 1 & 2. Neighborhood Graph 구조를 만들고, 동시에 Shortest Path로 Distance Matrix D를 구한다.
+
+epsilon-Isomap을 수행하여, eps보다 작은 dist만을 adjacency matrix를 구해서 neighbor를 구한다.
+
+그 외에 k-Isomap을 사용하면 k-nearest neighbor 함수를 사용할 수 있다.
+
+Shortest Path 알고리즘은 Dijkstra부터 Floyd-Warshall, Bellman-Ford 등 다양한 기법을 사용하면 된다.
+
+
+
+코드로 epsilon-Isomap을 구현하면 아래와 같다.
+
+```python
+# 1. Step 1&2 - epsilon-Neighborhood를 찾고 shortest-path 알고리즘으로 Distance Matrix를 만듬 
+def make_adjacency(data, dist_func="euclidean", eps=1):
+   """
+   ISOMAP을 위한 epsilon-Neighborhood를 찾고 shortest-path 알고리즘으로 Distance Matrix를 만듬 
+   Weighted Adjacency Matirx를 각 Point별로 찾는다. eps(epsiolon)안에 들어온 것들만 Neighbor로 취급한다. 
+
+   Neighbor끼리의 거리 계산은 기본은 euclidean이지만, 아래와 같은 distance metric을 cdist가 지원한다.
+    'braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation',
+    'cosine', 'dice', 'euclidean', 'hamming', 'jaccard', 'jensenshannon',
+    'kulczynski1', 'mahalanobis', 'matching', 'minkowski',
+    'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener',
+    'sokalsneath', 'sqeuclidean', 'yule'.
+
+    INPUT
+      data - (ndarray) the dataset which should be a numpy array
+      dist_func - (str) the distance metric to use. See SciPy cdist for list of
+                  options
+      eps - (int/float) epsilon value to define the local region. I.e. two points
+                        are connected if they are within epsilon of each other.
+
+    OUTPUT
+      short - (ndarray) Distance matrix, the shortest path from every point to
+          every other point in the set, INF if not reachable. 
+   """
+   n, m = data.shape
+   dist = cdist(data.T, data.T, metric=dist_func)
+   adj =  np.zeros((m, m)) + np.inf
+   bln = dist < eps
+   adj[bln] = dist[bln]
+   short = shortest_path(adj)
+
+   return short
+```
+
+
+
+#### Step 2. Shortest Path를 구해서 D를 만든다. (like Dijkstra, Floyd-Warshall, Bellman-Ford 등 사용 가능)
+
+#### Step 3. MDS를 수행하여 Embedding을 수행한다.
+
+
+
+## LLE
 
 ## t-SNE
 
