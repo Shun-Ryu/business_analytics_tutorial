@@ -268,19 +268,3 @@ Go to tutorial notebooks
 ## 4-5. 결론
 
 - 결론적으로는 SVM알고리즘은 지금도 쓸만한 알고리즘이라고 말할 수 있음.
-
-
-
-
-
-
-
-- Linear SVM
-  - Traing Time : **Linear SVM**이 Hyper Parameter Grid Search를 고려해도 가장 빠른 속도를 보임 (Hyper Parameter를 Searching한 다른 모든 알고리즘은 7*6=42개의 조합의 Search였으나 Linear SVM은 C값만 7개 Search하여 더 빠른 결과를 보임. 만일 Linear SVM도 동일한 Parameter Searching을 했다면 Kernel SVM과 유사한 Training Time을 보였으리라 생각됨)
-  - Testing Time
-  - Accuracy
-- Kernel SVM
-  - Training Time : **Kernel SVM**은 Linear SVM과 LightGBM을 제외하고 동일한 Hyper Parameter(7*6=42개)를 Searching했음에도, 다른 계열보다 빠른 학습 시간을 보여줌
-  - Testing Time 
-  - Accuracy
-- LightGBM을 제외하고 Li
