@@ -36,8 +36,8 @@
 
   - [1. Tutorial Notebook](#1-Tutorial-Notebook)
   - [2. Setting](#2-Setting)
-  - [3. Result (Accuracy)](#3-Result-:-Accuracy)
-  - [4. Result (Training Time)](#4-Result-:-Training-Time)
+  - [3. Result (Accuracy)](#3-Result-[Accuracy])
+  - [4. Result (Training Time)](#4-Result-#-Training-Time)
   - [5. Result (Inference Time)](#5-Result-:-Inference-Time)
 
 - [Final Insights](#Final-Insights)
@@ -192,7 +192,7 @@
 
 ## 1. Tutorial Notebook 
 
-#### [Go to the tutorial notebook]([business_analytics_tutorial/tutorial_svm_comparison.ipynb at main · Shun-Ryu/business_analytics_tutorial (github.com)](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb))
+##### [🔥Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
 
 
 
@@ -236,7 +236,7 @@
 
 
 
-## 3. Result : Accuracy 
+## 3. Result [Accuracy] 
 
 - 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
