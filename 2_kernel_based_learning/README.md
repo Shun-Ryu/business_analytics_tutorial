@@ -23,17 +23,12 @@
 # Table of Contents
 
 - [Background of SVM](#Background-of-SVM)
-
   - [1. Basic Concept](#1-Basic-Concept)
-
   - [2. About SVM](#2-About-SVM)
-
   - [3. Linear SVM](#3-Linear-SVM)
-
   - [4. Kernel SVM](#4-Kernel-SVM)
 
 - [Tutorial - Competion for tabular datasets](#Tutorial_Competion-for-tabular-datasets)
-
   - [1. Tutorial Notebook](#1-Tutorial-Notebook)
   - [2. Setting](#2-Setting)
   - [3. Result (Accuracy)](#3-Result_Accuracy)
@@ -41,7 +36,6 @@
   - [5. Result (Inference Time)](#5-Result_Inference-Time)
 
 - [Final Insights](#Final-Insights)
-
   - [1. Training Time 관점](#1-Training-Time-관점)
   - [2. Inference Time 관점](#2-Inference-Time-관점)
   - [3. Accuracy 관점](#3-Accuracy-관점)
