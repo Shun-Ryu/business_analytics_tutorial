@@ -192,7 +192,7 @@
 
 ## 1. Tutorial Notebook 
 
-Go to tutorial notebooks
+#### [Go to the tutorial notebook]([business_analytics_tutorial/tutorial_svm_comparison.ipynb at main · Shun-Ryu/business_analytics_tutorial (github.com)](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb))
 
 
 
@@ -361,3 +361,4 @@ Go to tutorial notebooks
 ## 5. 결론
 
 - 결론적으로는 SVM알고리즘은 지금도 쓸만한 알고리즘이라고 말할 수 있음.
+
