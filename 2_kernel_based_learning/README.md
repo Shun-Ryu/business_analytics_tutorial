@@ -20,6 +20,10 @@
 
 
 
+본 Tutorial은 고려대학교 산업경영공학부 대학원 Business Analytics 강의 자료를 기반으로 작성되었습니다.
+
+
+
 # Table of Contents
 
 - [Background of SVM](#Background-of-SVM)
