@@ -36,7 +36,7 @@
 
   - [1. Tutorial Notebook](#1-Tutorial-Notebook)
   - [2. Setting](#2-Setting)
-  - [3. Result (Accuracy)](#3-Result@Accuracy)
+  - [3. Result (Accuracy)](#3-Result-/-Accuracy)
   - [4. Result (Training Time)](#4-Result-#-Training-Time)
   - [5. Result (Inference Time)](#5-Result-:-Inference-Time)
 
@@ -236,7 +236,7 @@
 
 
 
-## 3. Result@Accuracy
+## 3. Result / Accuracy
 
 - 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
