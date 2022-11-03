@@ -29,19 +29,21 @@
   - [4. Kernel SVM](#4-Kernel-SVM)
 
 - [Tutorial - Competion for tabular datasets](#Tutorial_Competion-for-tabular-datasets)
+  
   - [1. Tutorial Notebook](#1-Tutorial-Notebook)
   - [2. Setting](#2-Setting)
   - [3. Result (Accuracy)](#3-Result_Accuracy)
   - [4. Result (Training Time)](#4-Result_Training-Time)
   - [5. Result (Inference Time)](#5-Result_Inference-Time)
-
+  
 - [Final Insights](#Final-Insights)
+  
   - [1. Training Time 관점](#1-Training-Time-관점)
   - [2. Inference Time 관점](#2-Inference-Time-관점)
   - [3. Accuracy 관점](#3-Accuracy-관점)
   - [4. 그 외의 생각들](#4-그-외의-생각들)
   - [5. 결론](#5-결론)
-
+  
   
 
 
@@ -180,13 +182,13 @@
 
 # Tutorial_Competion for tabular datasets
 
-위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 사용하는 Dataset과 알고리즘은 아래와 같다.
+위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 아래의 Tutorial Link를 통해 Notebook으로 각 Dataset에 따른 Algorithm의 속도와 성능을 비교할 수 있다.
 
 
 
 ## 1. Tutorial Notebook 
 
-### [🔥Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
+### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
 
 
 
