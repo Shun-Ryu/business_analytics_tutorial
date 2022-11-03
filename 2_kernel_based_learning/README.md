@@ -6,7 +6,7 @@
 
 
 
-🔥이번 Tutorial에서는 **SVM(Support Vector Machine)**과 같은 고전적인 방법의 Machine Learning (Classification) 알고리즘이 쓸만한지에 대해서 **여러가지 Tabular Data와 다양한 다른 Algorithms (like Basic ANN, Deep Learning, XGBoost, etc.)**의 <u>성능(Accuracy)과 속도(Perforamance for Training and Testing)</u>를 비교 해 보고자 한다.
+🔥이번 Tutorial에서는 **SVM(Support Vector Machine)**과 같은 고전적인 방법의 Machine Learning (Classification) 알고리즘이 쓸만한지에 대해서 **여러가지 Tabular Data와 다양한 다른 Algorithms (like Basic ANN, Deep Learning, XGBoost, etc.)**의 성능(Accuracy)과 속도(Perforamance for Training and Testing)를 비교 해 보고자 한다.
 
 
 
@@ -40,7 +40,7 @@
 
 ### VC Dimension이란?
 - 어떤 함수의 Capacity (like Model Complexity)를 측정하는 지표
-- = 함수 H에 의해 최대로 Shattered될 수 있는 Points의 수
+- 다시말해, 함수 H에 의해 최대로 Shattered될 수 있는 Points의 수
     - 앞의 예시에서 선형 분류기의 VC Dimension은 2차원에서 3 (3개까지 분류 가능)
 
 ### Structural Risk Minimization (구조적 위험 최소화)
