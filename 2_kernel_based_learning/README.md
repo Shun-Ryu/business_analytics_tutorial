@@ -184,7 +184,7 @@
 
   
 
-# Tutorial : Competion for tabular datasets
+# Tutorial_Competion for tabular datasets
 
 위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 사용하는 Dataset과 알고리즘은 아래와 같다.
 
@@ -192,7 +192,7 @@
 
 ## 1. Tutorial Notebook 
 
-##### [🔥Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
+### [🔥Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
 
 
 
