@@ -22,9 +22,17 @@
 
 # Table of Contents
 
-- [About SVM](#"2. About SVM")
+- [Background of SVM](#Background-of-SVM)
 
-- [Supervised Feature Selection](#Supervised-Feature-Selection)
+  - [1. Basic Concept](#1-Basic-Concept)
+
+  - [2. About SVM](#2-About-SVM)
+
+  - [3. Linear SVM](#3-Linear-SVM)
+
+  - [4. Kernel SVM](#4-Kernel-SVM)
+
+- [Tutorial - Competion for tabular datasets](#Tutorial---Competion-for-tabular-datasets)
 
   - [Genetic Algorithm](#Genetic-Algorithm)
 
@@ -43,9 +51,9 @@
 
 
 
-# 2. About SVM
+# Background of SVM
 
-## 2-1. Basic Concept
+## 1. Basic Concept
 
 ### Shatter란 무엇일까?
 - Shatter란, 함수 F는 n개의 points를 shatter할 수 있다는 개념이다.
@@ -82,7 +90,7 @@
 
 
 
-## 2-2. About SVM
+## 2. About SVM
 
 ### Linear Classification Model
 
@@ -125,7 +133,7 @@
 
 - 결국 SVM이란 것은 구조적 위험을 줄일 수 있는 Hyperplane의 Margin을 최대화하여 Classification을 선형으로 잘 하려는 모델이라고 볼 수 있다.
 
-## 2-3 Linear SVM
+## 3. Linear SVM
 
 ### Hard Margin SVM (Basic Form)
 
@@ -148,7 +156,7 @@
   - ![image-20221103184015302](./attachments/image-20221103184015302.png)
   - ![image-20221103184027373](./attachments/image-20221103184027373.png)
 
-## 2-4 Kernel SVM
+## 4. Kernel SVM
 
 - 딱 하나만 기억하면 된다. SVM은 Linear Model이다.
 - 그렇다면 Non-Linear한 Data를 SVM은 어떻게 분류할 수 있을까?
@@ -171,7 +179,7 @@
 
   
 
-# 3. Tutorial - Competition for tabular data with other algorithms
+# 3. Tutorial - Competion for tabular datasets
 
 위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 사용하는 Dataset과 알고리즘은 아래와 같다.
 
