@@ -32,13 +32,13 @@
 
   - [4. Kernel SVM](#4-Kernel-SVM)
 
-- [Tutorial - Competion for tabular datasets](#Tutorial-:-Competion-for-tabular-datasets)
+- [Tutorial - Competion for tabular datasets](#Tutorial_Competion-for-tabular-datasets)
 
   - [1. Tutorial Notebook](#1-Tutorial-Notebook)
   - [2. Setting](#2-Setting)
-  - [3. Result (Accuracy)](#3-Result-/-Accuracy)
-  - [4. Result (Training Time)](#4-Result-#-Training-Time)
-  - [5. Result (Inference Time)](#5-Result-:-Inference-Time)
+  - [3. Result (Accuracy)](#3-Result_Accuracy)
+  - [4. Result (Training Time)](#4-Result_Training-Time)
+  - [5. Result (Inference Time)](#5-Result_Inference-Time)
 
 - [Final Insights](#Final-Insights)
 
@@ -236,7 +236,7 @@
 
 
 
-## 3. Result / Accuracy
+## 3. Result_Accuracy
 
 - 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
@@ -260,7 +260,7 @@
 
 
 
-## 4. Result : Training Time
+## 4. Result_Training Time
 
 - 측정 단위 : Second
 - CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
@@ -283,7 +283,7 @@
 
 
 
-## 5. Result : Inference Time
+## 5. Result_Inference Time
 
 - 측정 단위 : Second
 - CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
