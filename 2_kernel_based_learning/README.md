@@ -6,7 +6,7 @@
 
 
 
-🔥이번 Tutorial에서는 **SVM(Support Vector Machine)** 과 같은 고전적인 방법의 Machine Learning (Classification) 알고리즘이 쓸만한지에 대해서 **여러가지 Tabular Data와 다양한 다른 Algorithms (like Basic ANN, Deep Learning, XGBoost, etc.)** 의 성능(Accuracy)과 속도(Perforamance for Training and Testing)를 비교 해 보고자 한다.
+🔥이번 Tutorial에서는 **SVM(Support Vector Machine)** 과 같은 고전적인 방법의 Machine Learning (Classification) 알고리즘이 쓸만한지에 대해서 **여러가지 Tabular Data와 다양한 다른 Algorithms (like Basic ANN, Deep Learning, XGBoost, etc.)** 의 성능(Accuracy)과 속도(Perforamance for Training and Inference)를 비교 해 보고자 한다.
 
 
 
@@ -32,16 +32,21 @@
 
   - [4. Kernel SVM](#4-Kernel-SVM)
 
-- [Tutorial - Competion for tabular datasets](#Tutorial---Competion-for-tabular-datasets)
+- [Tutorial - Competion for tabular datasets](#Tutorial-:-Competion-for-tabular-datasets)
 
-  - [Genetic Algorithm](#Genetic-Algorithm)
+  - [1. Tutorial Notebook](#1-Tutorial-Notebook)
+  - [2. Setting](#2-Setting)
+  - [3. Result (Accuracy)](#3-Result-:-Accuracy)
+  - [4. Result (Training Time)](#4-Result-:-Training-Time)
+  - [5. Result (Inference Time)](#5-Result-:-Inference-Time)
 
-- [Unsupervised Feature Extraction](#Unsupervised-Feature-Extraction)
+- [Final Insights](#Final-Insights)
 
-  - [MDS](#MDS)
-  - [ISOMAP](#ISOMAP)
-  - [LLE](#LLE)
-  - [t-SNE](#t-SNE)
+  - [1. Training Time 관점](#1-Training-Time-관점)
+  - [2. Inference Time 관점](#2-Inference-Time-관점)
+  - [3. Accuracy 관점](#3-Accuracy-관점)
+  - [4. 그 외의 생각들](#4-그-외의-생각들)
+  - [5. 결론](#5-결론)
 
   
 
@@ -179,19 +184,19 @@
 
   
 
-# 3. Tutorial - Competion for tabular datasets
+# Tutorial : Competion for tabular datasets
 
 위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 사용하는 Dataset과 알고리즘은 아래와 같다.
 
 
 
-## 3-1. Tutorial Notebook 
+## 1. Tutorial Notebook 
 
 Go to tutorial notebooks
 
 
 
-## 3-2. Setting
+## 2. Setting
 
 ### Datasets
 
@@ -231,8 +236,9 @@ Go to tutorial notebooks
 
 
 
-## 3-3. Result (Accuracy, %)
+## 3. Result : Accuracy 
 
+- 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
 - Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
 - 모델은 Validation 기준으로 Loss가 가장 적은 Best Model로 Testing을 진행함
@@ -254,8 +260,9 @@ Go to tutorial notebooks
 
 
 
-## 3-4. Result (Training Time, sec)
+## 4. Result : Training Time
 
+- 측정 단위 : Second
 - CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
 - GPU : Nvidia Mobile 3050ti 사용
 
@@ -276,8 +283,9 @@ Go to tutorial notebooks
 
 
 
-## 3-45. Result (Inference Time, sec)
+## 5. Result : Inference Time
 
+- 측정 단위 : Second
 - CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
 - GPU : Nvidia Mobile 3050ti 사용
 
@@ -298,9 +306,9 @@ Go to tutorial notebooks
 
 
 
-# 4. Final Insights
+# Final Insights
 
-## 4-1. Training Time 관점
+## 1. Training Time 관점
 
 - **SVM은 타 방식 대비 전반적으로 장점을 갖고 있음** ✅
 
@@ -312,14 +320,14 @@ Go to tutorial notebooks
 
 
 
-## 4-2. Testing Time의 관점
+## 2. Inference Time 관점
 
 - **SVM은 타 방식 대비 Big Dataset에서는 단점을 갖고 있음** ❌
 - **그러나 SVM은 타 방식 대비 Small Dataset에서는 나쁘지 않는 속도를 갖고 있음(Single Thread Embedded Real-Time System에 적합)** ✅
 
-- Diabetes는 700개 정도의 Dataset인데, 이정도 크기 이후부터 Testing에서는 SVM이 다른 방식 대비 빠른 속도를 보이지는 않음. 물론 GPU를 사용하지 않는 NN계열보다는 빠를 수 있겠으나, Boosting, Random Forest, RVM 등에 모두 속도가 밀림
+- Diabetes는 700개 정도의 Dataset인데, 이정도 크기 이후부터 Inference에서는 SVM이 다른 방식 대비 빠른 속도를 보이지는 않음. 물론 GPU를 사용하지 않는 NN계열보다는 빠를 수 있겠으나, Boosting, Random Forest, RVM 등에 모두 속도가 밀림
 
-- 그러나 Small Dataset을 한번에 Testing할 때에는 장점을 갖추고 있음. 이를 보았을때 Single Thread의 Embedded System에서 Real-Time Inference나 FPGA, ASIC으로 구현했을때의 속도는 SVM이 가장 빠르리라 생각됨 (특히 Testing Time에 Single Instance를 처리하는 속도가 가장 빠르리라 예상)
+- 그러나 Small Dataset을 한번에 Inference할 때에는 장점을 갖추고 있음. 이를 보았을때 Single Thread의 Embedded System에서 Real-Time Inference나 FPGA, ASIC으로 구현했을때의 속도는 SVM이 가장 빠르리라 생각됨 (특히 Inference Time에 Single Instance를 처리하는 속도가 가장 빠르리라 예상)
 
 - 알고리즘 특성상 Boosting계열에서 정렬 등이 필요하여 이때 Boot-up되는 속도가 SVM대비 오래 걸리는 것으로 추정됨
 
@@ -327,28 +335,29 @@ Go to tutorial notebooks
 
 
 
-## 4-3. Accuracy의 관점 
+## 3. Accuracy 관점 
 
 - **SVM이 타 방식 대비 Accuracy가 유사하거나 더 좋은 경우도 있음** ✅
 - Accuracy도 SVM이 전체적으로 모든 Dataset에서 다른 알고리즘 대비 가장 좋거나(Diabetes, Digits), 2~3위 수준(Irs, Breast Cancer)의 Accuracy를 나타냄. 
 - 특히나 Linear SVM (Soft Margin)이 다른 모델들 대비 크게 떨어지지 않는 Accuracy를 보여줌으로써, Kernel이 필요한 특이한 Case의 임의로 생성된 Dataset이 아닌한, 매우 빠르고 정확하게 Classification을 하는 능력을 갖추었다고 보여짐. 특히나 Dimension이 커지면서 Linear Model로 분류되는 Hyper Plane을 찾기가 더 쉽지 않을까 생각됨.
 - 물론 Dataset이 크지 않고 단순하며, 전반적으로 Accuracy가 유사하게 높으므로(물론 Use-Case에 따라서 0.1% Accuracy도 매우 크다고 볼 수 있긴 하지만) 이 결과로만 가지고 SVM이 다른 알고리즘보다 확실히 뛰어나다고 볼수는 없음.
-- 그러나 확실한건, **Training Time과 Testing Time대비, SVM이 다른 최신의 알고리즘보다 떨어진다고 보기 어려우며, 오히려 더 좋은 경우 있다고 말할 수 있음**.  따라서 Silver Bullet은 없으므로, SVM알고리즘을 실무에서 꼭 검증 해 볼 필요는 있음
+- 그러나 확실한건, **Training Time과 Inference Time대비, SVM이 다른 최신의 알고리즘보다 떨어진다고 보기 어려우며, 오히려 더 좋은 경우 있다고 말할 수 있음**.  따라서 Silver Bullet은 없으므로, SVM알고리즘을 실무에서 꼭 검증 해 볼 필요는 있음
 
 
 
-## 4-4. 그 외
+## 4. 그 외의 생각들
 
 - 그 외 Tabnet같은 경우 좋은 성능을 내지 못하는 경우가 있는데, Dataset에 적은 경우 특히나 그러하며(Iris, Breast Cancer), Tabnet은 category encoding에 유리한 측면이 있다고 보여, 좀 더 복잡한 column을 가진 dataset, 좀 더 큰 dataset에서 활용되면 좋을 것이라 생각됨
 - 그리고 Basic ANN은 Dropout과 SELU등의 활용으로 Tabular에서 다른 알고리즘 못지않은 성능을 보일 수 있다는 것을 확인함
-- 또한 RVM은 타 알고리즘 대비 Training Time이 상대적으로 매우 길었지만, Testing Time은 타 알고리즘대비 매우 빠른 편임. 또한 성능도 DIgits Dataset 외에는 타 알고리즘 대비 상대적으로  높은 성능을 보이고 있음. 
+- 또한 RVM은 타 알고리즘 대비 Training Time이 상대적으로 매우 길었지만, Inference Time은 타 알고리즘대비 매우 빠른 편임. 또한 성능도 DIgits Dataset 외에는 타 알고리즘 대비 상대적으로  높은 성능을 보이고 있음. 
 - 그러나 RVM은 Digits 데이터가 1700개 가량 밖에 안되는 경우에도, 35분이나 걸리는 아주 긴 Training시간을 갖음. 따라서 RVM은 Small Dataset에서만 꼭 고려해야할 알고리즘으로 생각됨(Hyper Parameter Tunning도 자동으로 이루어질 수 있으며, Output에 대한 Uncertainty를 구할 수 있음)
+- RVM은 Gaussian Process와 유사하기 때문에 데이터가 커짐에 따라 매우 느려지고 O(N^3), Feature의 개수가 늘어날수록 Accuracy가 떨어지는 경향을 보이지 않나 생각이 듬
 - RVM Training의 빠른 구현 Tipping, M., & Faul, A. (2003). Fast marginal likelihood maximization for sparse Bayesian models도 존재하므로, 해당 구현을 사용한다면 이번 Tutorial의 구현보다는 더 긍정적인 느낌을 받았으리라 생각됨
-- Random Forest는 전반적으로 Training Time이나 Testing Time에서 큰 장점은 없었으며(빠른 편이 아니었음), Accuracy 성능 역시 다른 알고리즘 보다 딱히 뛰어나다고 보이지는 않음(Breaset Cancer제외 Boosting보다 전반적으로 떨어짐). 향후에는 Random Forest보다는, SVM, Boosting, RVM을 좀 더 고려하지 않을까 생각이 듬 (물론 Hyper Parameter를 좀 더 테스트 하면 다를 수는 있을 듯)
+- Random Forest는 전반적으로 Training Time이나 Inference Time에서 큰 장점은 없었으며(빠른 편이 아니었음), Accuracy 성능 역시 다른 알고리즘 보다 딱히 뛰어나다고 보이지는 않음(Breaset Cancer제외 Boosting보다 전반적으로 떨어짐). 향후에는 Random Forest보다는, SVM, Boosting, RVM을 좀 더 고려하지 않을까 생각이 듬 (물론 Hyper Parameter를 좀 더 테스트 하면 다를 수는 있을 듯)
 - Boosting 계열에서 비교하자면, 속도 측면에서는 LightGBM이 빠른 편이지만 Accuracy 측면에서는 XGBoost나 CatBoost가 더 좋은 성능을 보이며 속도도 크게 느리지는 않음. LightGBM보다 XGBoost나 CatBoot를 좀 더 고려하는게 좋지 않을까 생각됨
 
 
 
-## 4-5. 결론
+## 5. 결론
 
 - 결론적으로는 SVM알고리즘은 지금도 쓸만한 알고리즘이라고 말할 수 있음.
