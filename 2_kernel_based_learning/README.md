@@ -20,9 +20,24 @@
 
 
 
-# 1. Table of Contents
+# Table of Contents
 
-[TOC]
+- [About SVM](#"2. About SVM")
+
+- [Supervised Feature Selection](#Supervised-Feature-Selection)
+
+  - [Genetic Algorithm](#Genetic-Algorithm)
+
+- [Unsupervised Feature Extraction](#Unsupervised-Feature-Extraction)
+
+  - [MDS](#MDS)
+  - [ISOMAP](#ISOMAP)
+  - [LLE](#LLE)
+  - [t-SNE](#t-SNE)
+
+  
+
+
 
 
 
@@ -116,7 +131,7 @@
 
 - Hard Magin SVM은 가장 기본적인 형태로, 잘못 분류된  Case는 고려하지 않는 굉장히 Strict한 모델이다.
 - **Object Function** 과 **Constraint **는 아래와 같다.
-  - ![image-20221103183335982](./attachments/image-20221103183335982.png)
+  - ![image-20221103183933634](./attachments/image-20221103183933634.png)
 
 - Constraint가 있는 상태에서의 목적함수 최적화 이므로 **Lagrangian Problem** 형태로 풀어낼 수 있다.
   - ![image-20221103181521540](./attachments/image-20221103181521540.png)
@@ -124,23 +139,51 @@
 
 ### Soft Margin SVM
 
+- Soft Margin SVM은 잘못 분류된 Case를 고려하여 Penalty를 줌. Hard Margin 보다 Margin이 더 커질 수 있고, Noise를 고려하여 더욱 Generalization될 수 있음
+- 우리는 다양한 Soft Margin SVM 중 많이 사용되는 **C-SVM** 을 다뤄 볼 것임(scikit-learn에서 사용됨)
+- Objective Function과 Constraint는 아래와 같다.
+  - ![image-20221103183850014](./attachments/image-20221103183850014.png)
 
+- Hard Margin SVM과 동일하게 Lagrangian Problem으로 최적해를 찾을 수 있다.
+  - ![image-20221103184015302](./attachments/image-20221103184015302.png)
+  - ![image-20221103184027373](./attachments/image-20221103184027373.png)
 
 ## 2-4 Kernel SVM
 
+- 딱 하나만 기억하면 된다. SVM은 Linear Model이다.
+- 그렇다면 Non-Linear한 Data를 SVM은 어떻게 분류할 수 있을까?
+- Idea는 간단하다. 기존의 차원보다 더 높은 차원으로 Data를 Mapping(or Transformation)하고, 그를 Linear Model인 SVM으로 분류하면 될 것이다. 아래의 그림처럼 p차원을 q차원으로 변환하는 함수를 사용하면 Linear Model로 쉽게 분류가 가능하다.
+  - ![image-20221103184351333](./attachments/image-20221103184351333.png)
+- 그러나 모든 데이터에 대해서 **𝝓(𝒙) ** 라는 고차원으로 Mapping하는 함수를 사용하면, 계산의 연산량이 굉장히 커져 SVM을 매우 느리게 만들 수 있다.
+- 이떄 사용되는 것이 바로 **Kernel Trick** 이다.
+- Kernel Trick을 사용하면 아래의 그림처럼, Raw Data를 높은 차원으로 Mapping하고, Mapping한 뒤 각각의 내적을 계산하는 과정인 총 2Step을, 1Step으로 줄여서 빠른 고차원 Mapping을 가능하게 해준다.
+  - ![image-20221103185039215](./attachments/image-20221103185039215.png)
+
+- 예를들어 아래와 같다.
+  - ![image-20221103185146912](./attachments/image-20221103185146912.png)
 
 
-# 3. Competition for tabular data with other algorithms
+- 모든건 Linear SVM과 동일한데 단순히 Data에 Kernel함수만 사용하면 바로 선형 분류기의 역할을 하는 것이 SVM의 장점이다.
+
+- 자주 사용하는 Kernel은 아래와 같다.
+
+  - ![image-20221103185445837](./attachments/image-20221103185445837.png)
+
+  
+
+# 3. Tutorial - Competition for tabular data with other algorithms
 
 위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 사용하는 Dataset과 알고리즘은 아래와 같다.
 
 
 
+## 3-1. Tutorial Notebook 
+
 Go to tutorial notebooks
 
 
 
-## 3-1. Setting
+## 3-2. Setting
 
 ### Datasets
 
@@ -180,7 +223,7 @@ Go to tutorial notebooks
 
 
 
-## 3-2. Result (Accuracy, %)
+## 3-3. Result (Accuracy, %)
 
 - Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
 - Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
@@ -203,7 +246,7 @@ Go to tutorial notebooks
 
 
 
-## 3-3. Result (Training Time, sec)
+## 3-4. Result (Training Time, sec)
 
 - CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
 - GPU : Nvidia Mobile 3050ti 사용
@@ -225,7 +268,7 @@ Go to tutorial notebooks
 
 
 
-## 3-4. Result (Inference Time, sec)
+## 3-45. Result (Inference Time, sec)
 
 - CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
 - GPU : Nvidia Mobile 3050ti 사용
