@@ -6,35 +6,18 @@
 
 
 
-🔥이번 Tutorial에서는 Anomaly Detection이 실제 Practical한 상황에서 어떠한 제약점이 있는지 파악해 보고, 어떠할 때 쓰면 안되는지 확이해 보고자 한다.
+🔥이번 Tutorial에서는 Anomaly Detection이 실제 Practical한 상황에서 어떠한 제약점이 있는지 파악해 보고, 어떠할 때 쓰면 안되는지 확인 해 보고자 한다. 확인해보고자 하는 문제는 2가지 이다.
 
 
 
-이를 통해서 현재도 SVM과 같은 Algorithm이 일반적인 Tabular Data에서 Choice를 해도 되는 것인지 그 한계를 알아보고자 한다. 
-
-특히 Deep Learning에 유리한 Big Data를 제외하고, 일반적인 Small Dataset에서의 성능을 비교해 보았다.
-
-
-
-> 물론 Image, Text와 같은 비정형데이터나 Time-Series와 같은 Data에서는 Deep Neural Network를 사용하셔야 합니다. :)
-
+1) **Anomaly Detection for "From Regression to Binary Classification Task"**
+   1) Manufacturing 공정 등의 Data는 기본적으로 Target값이 Continuous한 경우가 많이 있다. 이런 경우, 특정 Threshold 이상의 값은 '이상치(Anomaly)'로, Threshold 이하의 값은 '정상치(Normal)'로 Target Data를 Binary Categorization을 하여, Anomaly Detection이나 Classification으로 문제를 푸는 경우가 많다.
+   2) 이렇게 근본적으로 Regression Task인 것들을 Thresholding하였을 때, 과연 Anomaly Detection과 같은 알고리즘이 잘 동작하는지 테스트를 진행 해 보았다.
+   3) 특히 현업의 Manufacturing 공정에서는 대부분이 '정상'데이터이며 '이상'데이터는 매우 적은 Imbalanced한 Data가 대부분의 Case이다.
+2) **Anomaly Detection for "From Supervised Classification Task"**
+   1) 
 
 
-본 Tutorial은 고려대학교 산업경영공학부 대학원 Business Analytics 강의 자료를 기반으로 작성되었습니다.
-
-
-
-
-
-Diabetes DB
-
-(442, 10) / 442, 
-
-
-
-Boston
-
-(506, 13) / 506
 
 
 
@@ -74,129 +57,25 @@ Boston
 
 ## 1. Basic Concept
 
-### Shatter란 무엇일까?
-- Shatter란, 함수 F는 n개의 points를 shatter할 수 있다는 개념이다.
-    - example) 선형 분류기는 d차원에서 (d+2)개의 점을 Shatter 불가능하다. 즉 2차원에서 아래와 같이 4개의 점은 shatter가 불가능하다.
-    - ![image-20221103183141708](./attachments/image-20221103183141708.png)
-    - 출처 : [VC Dimension – Support Vector Machines (SVMs)](https://www.svms.org/vc-dimension/)
-
-### VC Dimension이란?
-- 어떤 함수의 Capacity (like Model Complexity)를 측정하는 지표
-- 다시말해, 함수 H에 의해 최대로 Shattered될 수 있는 Points의 수
-    - 앞의 예시에서 선형 분류기의 VC Dimension은 2차원에서 3 (3개까지 분류 가능)
-
-### Structural Risk Minimization (구조적 위험 최소화)
-
-![image-20221103183601390](./attachments/image-20221103183601390.png)
-
-출처 : [(PDF) Neural Networks Regularization Through Representation Learning (researchgate.net)](https://www.researchgate.net/publication/326666897_Neural_Networks_Regularization_Through_Representation_Learning)
-
-- 아래의 Training Error는 Emperical Risk를 나타내고, 보통 Machine Learning 알고리듬에서 Training과정에서 이 **Emperical Risk** , 즉 Training Error를 최소화 하려고 한다. (물론 Validation Set을 사용해 Overfitting을 사전 인식하고 학습을 멈춰야 함)
-- **SRM(Structureal Risk Minimization, 구조적 위험 최소화)** 에서는 Model의 Complexity에 따라, 즉 VC Dimensino이 커짐에 따라 Training Error도 작아지지만, 동시에 Model의 Risk(Bound on test error)를 낮추는, 즉 동일한 정확도라면 상대적으로 복잡도가 낮은 모델이 선호되어야 한다고 이야기 한다.
-  - ![image-20221103182912979](./attachments/image-20221103182912979.png)
-
-- 해당 SRM 접근법에 있어서는, 수학적으로 잘 정의가 되어있고, VC Dimension이 올라가면(즉 모델 Complexity가 올라가면), 모델의 위험도가 높아진다.
-  - 사실 Deep Learning에서의 Model Complexity에 따른 Overfitting과 동일한 개념이다.
-
-- **다음에 설명할 SVM은 Margin을 최대화** 함으로써 VC Dimension을 최소화하고, 이를 통해 Capacity 항을 최소화 한다.
-  - ![image-20221103182840512](./attachments/image-20221103182840512.png)
-    - $h$ : VC Dimension, 이게 커질수록 구조적 위험은 커진다. 즉, 모델 Complexity인 VC Dimensinon을 작게 가져가야 한다.
-    - $\Delta$ = Only 바꿀수 있는 Delta Margin --> Delta가 클수록, VC Dimension은 작아진다.
-
-  - ![image-20221103182854579](./attachments/image-20221103182854579.png)
-    - **VC Dimension이 작아질 수록, 구조적 위험(SRM)이 작아진다.**
+- - - 
 
 
 
 
 ## 2. About SVM
 
-### Linear Classification Model
-
-- 기본적으로 SVM은 선형 분류기 이다.
-
-- 따라서 점을 2차원에서 3개까지만 분류가 기본적으로 가능하다. 그러나 향후에 설명할 Kernel Method(Or Kernel Trick)를 사용해  저차원 공간의 Data를 고차원으로 보냄으로써, 선형 분류 모델로 더 많은 Shatter가 가능하도록 한다. 즉, 선형분류를 좀 더 확장한다.
-
-  - ![image-20221103183158556](./attachments/image-20221103183158556.png)
-
-- 위에 설명한 것 처럼 SVM은 분류 Margin을 최대화 하는 분류기를 더 좋은 분류기로 판단한다.(SRM이 줄어들기 떄문)
-
-  - 어느쪽이 더 좋은 분류기인가? (SVM입장에서는 우측이다.)
-      - ![image-20221103183210621](./attachments/image-20221103183210621.png)
-
-  - 여러 경계면 중, Margin을 최대화하는 우측 분류기가 좋은 분류기라고 SVM알고리듬은 정의 내린다.
-
-    - ![image-20221103183230690](./attachments/image-20221103183230690.png)
-- SVM은 Model내에서의 Unique Optimum을 찾을 수 있다. (Model에 대한 Global Optimum이라고 말할 수 있겠으나, Data에 대한 Global Optimum이라고 말할 수 있을까? 의문임. 실제로 최근엔 Deep Neural Network이 더 잘 Generalization한다.)
-
-### SVM Vs. Neural Network
-- 기존에는 Neural Network이 구조적 위험에 있어서 문제가 있었기 때문에 (Emperical Risk만 줄이도록 학습됨), Training시에 Overfitting문제로 잘 사용되지 않았음
-- 특히 SVM은 Convex Optimization문제로, Unique한 Optimum을 찾을 수 있었기 때문에 수학적으로도, 성능적으로도 더 선호됨
-- 그러나 Neural Network모델에서 데이터가 고차원이 되면서, High-Dimension에서는 Gradient가 0인 경우가 거의 없다는 사실이 밝혀져서, NN도 Local Optimum에 빠지지 않는다는 것을 알게 되었음. 또한 Dropout이나, Batch/Layer Normalization 등 Regularization 기법들이 나오기 시작하면서, SVM을 성능적으로 많이 제치게 되었다. 
-    - ![image-20221103183248120](./attachments/image-20221103183248120.png)
-    - 출처 : [[머신러닝/딥러닝] 6. Optimization for Deep Learning (sonsnotation.blogspot.com)](https://sonsnotation.blogspot.com/2020/11/6-optimization-for-deep-learning.html)
-
-
-
-### Margin 최대화 하는 분류 경계면
-
-- Margin을 최대화 해야 VC Dimension이 줄어들고 구조적 위험도 줄어든다. 그리서 우리는 Margin을 최대화하는 Hyper Plane을 찾아야 하는데, Binary Classification문제라고 할 때, 각 Class를 +1과 -1로 Labeling한다.
-  ![image-20221103183258278](./attachments/image-20221103183258278.png)
-- SVM은 결국 y=wx+b로 표현되는 Linear Model이 Margin을 최대로 갖도록 세팅하는 것임
-- Binary Class 각각을, wx+b >=1 이면 y label을 +1로, wx+b <= -1이면 y label을 -1로 mapping한다. (사실 +2, -2 등으로 해도 되지만, 계산상의 편의를 위해서 이렇게 진행)
-- 다음과 같이 Hyper Plane을 그릴수 있으며
-  - ![image-20221103183310561](./attachments/image-20221103183310561.png)
-
-- 이때의 Margin은 아래와 같이 계산된다.
-  - ![image-20221103183321090](./attachments/image-20221103183321090.png)
-
-- 결국 SVM이란 것은 구조적 위험을 줄일 수 있는 Hyperplane의 Margin을 최대화하여 Classification을 선형으로 잘 하려는 모델이라고 볼 수 있다.
+- 
 
 ## 3. Linear SVM
 
-### Hard Margin SVM (Basic Form)
-
-- Hard Magin SVM은 가장 기본적인 형태로, 잘못 분류된  Case는 고려하지 않는 굉장히 Strict한 모델이다.
-- **Object Function** 과 **Constraint **는 아래와 같다.
-  - ![image-20221103183933634](./attachments/image-20221103183933634.png)
-
-- Constraint가 있는 상태에서의 목적함수 최적화 이므로 **Lagrangian Problem** 형태로 풀어낼 수 있다.
-  - ![image-20221103181521540](./attachments/image-20221103181521540.png)
-  - ![image-20221103181624543](./attachments/image-20221103181624543.png)
-
-### Soft Margin SVM
-
-- Soft Margin SVM은 잘못 분류된 Case를 고려하여 Penalty를 줌. Hard Margin 보다 Margin이 더 커질 수 있고, Noise를 고려하여 더욱 Generalization될 수 있음
-- 우리는 다양한 Soft Margin SVM 중 많이 사용되는 **C-SVM** 을 다뤄 볼 것임(scikit-learn에서 사용됨)
-- Objective Function과 Constraint는 아래와 같다.
-  - ![image-20221103183850014](./attachments/image-20221103183850014.png)
-
-- Hard Margin SVM과 동일하게 Lagrangian Problem으로 최적해를 찾을 수 있다.
-  - ![image-20221103184015302](./attachments/image-20221103184015302.png)
-  - ![image-20221103184027373](./attachments/image-20221103184027373.png)
+- - 
 
 ## 4. Kernel SVM
 
-- 딱 하나만 기억하면 된다. SVM은 Linear Model이다.
-- 그렇다면 Non-Linear한 Data를 SVM은 어떻게 분류할 수 있을까?
-- Idea는 간단하다. 기존의 차원보다 더 높은 차원으로 Data를 Mapping(or Transformation)하고, 그를 Linear Model인 SVM으로 분류하면 될 것이다. 아래의 그림처럼 p차원을 q차원으로 변환하는 함수를 사용하면 Linear Model로 쉽게 분류가 가능하다.
-  - ![image-20221103184351333](./attachments/image-20221103184351333.png)
-- 그러나 모든 데이터에 대해서 **𝝓(𝒙) ** 라는 고차원으로 Mapping하는 함수를 사용하면, 계산의 연산량이 굉장히 커져 SVM을 매우 느리게 만들 수 있다.
-- 이떄 사용되는 것이 바로 **Kernel Trick** 이다.
-- Kernel Trick을 사용하면 아래의 그림처럼, Raw Data를 높은 차원으로 Mapping하고, Mapping한 뒤 각각의 내적을 계산하는 과정인 총 2Step을, 1Step으로 줄여서 빠른 고차원 Mapping을 가능하게 해준다.
-  - ![image-20221103185039215](./attachments/image-20221103185039215.png)
-
-- 예를들어 아래와 같다.
-  - ![image-20221103185146912](./attachments/image-20221103185146912.png)
+- 
 
 
-- 모든건 Linear SVM과 동일한데 단순히 Data에 Kernel함수만 사용하면 바로 선형 분류기의 역할을 하는 것이 SVM의 장점이다.
-
-- 자주 사용하는 Kernel은 아래와 같다.
-
-  - ![image-20221103185445837](./attachments/image-20221103185445837.png)
-
-  
+- 
 
 # Tutorial_Competion for tabular datasets
 
@@ -220,7 +99,6 @@ Boston
 | ---- | ------------- | ---------------------------------------------- | ------------- | --------------- | ---------------- |
 | 1    | Diabetes      | 당뇨병 환자 데이터 (0, 1)                      | 768           | 8               | 2                |
 | 2    | Digits        | 0~9까지의 숫자 Dataset. Mini MNIST (8*8 Image) | 1797          | 64              | 10               |
-| 3    | Iris          | Iris 꽃 데이터                                 | 150           | 4               | 3                |
 | 4    | Breast Cancer | 위스콘신 유방암 데이터 (0, 1)                  | 569           | 30              | 2                |
 
 
