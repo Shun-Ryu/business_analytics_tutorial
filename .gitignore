@@ -1,2 +1,3 @@
 .vscode
 catboost_info
+/3_anomaly_detection/Tutorials/tutorial_svm_comparison.ipynb
