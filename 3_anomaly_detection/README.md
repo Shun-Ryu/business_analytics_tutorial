@@ -61,7 +61,7 @@
 
 
 
-# Background of SVM
+# Background of Anomaly Detection
 
 ## 1. Basic Concept
 
@@ -70,20 +70,23 @@
 
 
 
-## 2. About SVM
+## 2. One-Class SVM
 
 - 
 
-## 3. Linear SVM
+## 3. Isolation Forest
 
 - - 
 
-## 4. Kernel SVM
+## 4. Auto-Encoder for Anomaly Detection
+
+- 
+## 5. Mixture of Gaussian
+
 
 - 
 
 
-- 
 
 # Tutorial_Regression_2_AnomalyDetection
 
@@ -106,7 +109,7 @@
 |      | Datasets                        | Description                                                  | Num Instances | Num Inputs (Xs) | Num Outputs (Ys) |
 | ---- | ------------------------------- | ------------------------------------------------------------ | ------------- | --------------- | ---------------- |
 | 1    | Diabetes (Regression)           | 당뇨병 환자 데이터 (1년 후 당뇨의 진행정도를 Target값으로 함) | 442           | 10              | 1                |
-| 2    | Boston House Price (Regression) | Boston의 집값에 대한 Data                                    | 1797          | 64              | 10               |
+| 2    | Boston House Price (Regression) | Boston의 집값에 대한 Data                                    | 506           | 13              | 1                |
 
 데이터셋은 아래와 같은 코드로 불러오게 됩니다.
 
@@ -201,19 +204,221 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svr)
 
 그 결과 다음과 같은 결과를 얻을 수 있다.
 
-|                  | Diabetes               | Boston |
-| ---------------- | ---------------------- | ------ |
-| Confusion Matrix | [[34 11]<br/> [11 33]] |        |
+|                                                           | Diabetes               | Boston                  |
+| --------------------------------------------------------- | ---------------------- | ----------------------- |
+| Confusion Matrix                                          | [[34 11]<br/> [11 33]] | [[49  6] <br />[ 6 41]] |
+| Classification Accuracy<br />(by Regression Thresholding) | 75.28%                 | 88.23%                  |
 
+
+
+### One-Class SVM
+
+One-Class SVM은 Scikit-Learn에 구현된 Nu-SVM을 사용하였다. 아래와같은 param_grid에 있는 Hyper-parameter를 Grid Searching하여 최적화를 진행하였으며 X_Train값 만을 사용하여 학습을 진행하였다.
+
+```python
+param_grid = [
+    {'kernel': ['linear'], 'nu': [0.05, 0.1, 0.25, 0,5, 0.7]},
+    {'kernel': ['rbf'], 'nu': [0.05, 0.1, 0.25, 0,5, 0.7],
+    'gamma': [0.01, 0.03, 0.1, 0.3, 0.05, 1.0]},
+]
+
+elapsed_time_kernel_svm = []
+
+svm_classifier = OneClassSVM(kernel='rbf')
+# svm_classifier = svm_classifier.fit(x_train, y_train)
+
+start_time = datetime.now()
+grid_search = GridSearchCV(svm_classifier, param_grid, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_svm_classifier = grid_search.fit(x_train_only)
+elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
 
 
 ```
-Confusion Matrix
- [[34 11]
- [11 33]]
-Best Prameters  {'C': 100.0, 'gamma': 0.1, 'kernel': 'rbf'}
-Accuracy  0.7528089887640449
+
+
+
+Inference 결과는 아래와 같이 계산하였다.
+
+```python
+start_time = datetime.now()
+y_pred = best_svm_classifier.predict(x_test)
+elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
+
+acc_svm_kernel = accuracy_score(y_test_c, y_pred)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred))
+print('Best Prameters ', grid_search.best_params_)
+print('Accuracy ', acc_svm_kernel)
+print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
+# Isolation Forest 
 ```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes               | Boston                 |
+| -------------------------- | ---------------------- | ---------------------- |
+| Confusion Matrix           | [[ 2 43] <br/>[ 3 41]] | [[15 40]<br />[ 3 44]] |
+| Anomaly Detection Accuracy | 48.31%                 | 57.84%                 |
+
+
+
+### Isolation Forest
+
+```python
+iforest_classifier = IsolationForest()
+
+iforest_parameters = {'n_estimators': list(range(10, 200, 50)), 
+              'max_samples': list(range(20, 120, 20)), 
+              'contamination': [0.1, 0.2], 
+              'max_features': [5,15, 20], 
+              'bootstrap': [True, False], 
+              }
+
+elapsed_time_iforest = []
+
+start_time = datetime.now()
+iforest_grid_search = GridSearchCV(iforest_classifier, iforest_parameters, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_iforest_classifier = iforest_grid_search.fit(x_train_only)
+elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
+```
+
+
+
+```python
+# y_pred = xgb_classifier.predict(x_test)
+start_time = datetime.now()
+y_pred_c = best_iforest_classifier.predict(x_test)
+elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
+
+
+acc_iforest = accuracy_score(y_test_c, y_pred_c)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred_c))
+print("best parameters ", iforest_grid_search.best_params_)
+print('Accuracy ', acc_iforest)
+print('elapsed time ', elapsed_time_iforest)
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes               | Boston                 |
+| -------------------------- | ---------------------- | ---------------------- |
+| Confusion Matrix           | [[ 8 37] <br/>[ 2 42]] | [[25 30]<br />[ 8 39]] |
+| Anomaly Detection Accuracy | 56.17%                 | 62.74%                 |
+
+
+
+### Auto-Encoder for Anomaly Detection
+
+```python
+class BasicClassification(nn.Module):
+    def __init__(self) -> None:
+        super(BasicClassification, self).__init__()
+
+        self.layer_1 = nn.Linear(NUM_INPUT, NUM_1ST_HIDDEN)
+        self.layer_2 = nn.Linear(NUM_1ST_HIDDEN, NUM_2ND_HIDDEN)
+        self.layer_3 = nn.Linear(NUM_2ND_HIDDEN, NUM_1ST_HIDDEN)
+        self.layer_4 = nn.Linear(NUM_1ST_HIDDEN, NUM_INPUT)
+
+        self.actvation_1 = nn.SELU()
+        self.actvation_2 = nn.SELU()
+        self.actvation_3 = nn.SELU()
+    
+    def forward(self, inputs):
+        x = self.actvation_1(self.layer_1(inputs))
+        x = self.actvation_2(self.layer_2(x))
+        x = self.actvation_3(self.layer_3(x))
+        x = self.layer_4(x)
+
+        return x
+        
+```
+
+
+
+```python
+result_reconstruct = abs(x_test - output_num).sum(axis=1)
+
+result_class = result_reconstruct.copy()
+result_class[result_reconstruct > THRESHOLD_FOR_RECONSTRUCTION] = -1
+result_class[result_reconstruct <=THRESHOLD_FOR_RECONSTRUCTION] = 1
+
+# result_class
+acc_ae = accuracy_score(y_test_c, result_class)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, result_class))
+print('Accuracy ', acc_ae)
+```
+
+
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes                | Boston                 |
+| -------------------------- | ----------------------- | ---------------------- |
+| Confusion Matrix           | [[17 28] <br />[ 7 37]] | [[33 22]<br />[15 32]] |
+| Anomaly Detection Accuracy | 60.67%                  | 63.72%                 |
+
+
+
+### Mixture Of Gaussian
+
+```python
+gmm_classifier = GaussianMixture()
+
+gmm_parameters ={'n_components' : [1, 2, 3,4,5,6, 7] , 'max_iter': [int(1e2), int(1e3), int(1e6)]}
+
+elapsed_time_gmm= []
+
+start_time = datetime.now()
+gmm_grid_search = GridSearchCV(gmm_classifier, gmm_parameters, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_gmm_classifier = gmm_grid_search.fit(x_train_only)
+elapsed_time_gmm.append((datetime.now()-start_time).total_seconds())
+
+```
+
+
+
+```python
+start_time = datetime.now()
+y_pred_c = best_gmm_classifier.predict(x_test)
+elapsed_time_gmm.append((datetime.now()-start_time).total_seconds())
+
+
+densities = best_gmm_classifier.score_samples(x_test)
+density_threshold = np.percentile(densities, THRESHOLD_FOR_DENSITY)
+anomalies = np.argwhere(densities < density_threshold)
+print(len(anomalies))
+
+real_anomaly = np.argwhere(y_test_c == -1)
+
+
+y_pred_anomalies = y_test_c.copy()
+y_pred_anomalies[densities < density_threshold] = -1
+y_pred_anomalies[densities >= density_threshold] = 1
+
+acc_gmm = accuracy_score(y_test_c, y_pred_anomalies)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred_anomalies))
+print("best parameters ", best_gmm_classifier.best_params_)
+print('Accuracy ', acc_gmm)
+print('elapsed time ', elapsed_time_gmm)
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes               | Boston                 |
+| -------------------------- | ---------------------- | ---------------------- |
+| Confusion Matrix           | [[24 21]<br />[14 30]] | [[31 24]<br />[13 34]] |
+| Anomaly Detection Accuracy | 60.67%                 | 63.72%                 |
 
 
 
@@ -226,18 +431,13 @@ Accuracy  0.7528089887640449
 - Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
 - 모델은 Validation 기준으로 Loss가 가장 적은 Best Model로 Testing을 진행함
 
-|      | Algorithm                    | Diabetes     | Digits       | Iris         | Breast Cancer |
-| ---- | ---------------------------- | ------------ | ------------ | ------------ | ------------- |
-| 1    | Linear SVM                   | <u>81.16</u> | 97.77        | 96.66        | 98.24         |
-| 2    | Kernel SVM (rbf)             | **83.11**    | **99.16**    | 96.66        | 98.24         |
-| 3    | Basic ANN                    | 78.57        | <u>97.78</u> | **100**      | <u>98.25</u>  |
-| 4    | TabNet (Deep Learning Model) | 79.22        | 96.94        | 76.66        | 92.98         |
-| 5    | XGBoost                      | **83.11**    | 96.11        | 96.66        | 95.61         |
-| 6    | LightGBM                     | 77.92        | 96.66        | 96.66        | 93.85         |
-| 7    | CatBoost                     | 80.51        | 97.77        | 96.66        | 96.49         |
-| 8    | Random Forest                | 75.97        | 96.66        | 96.66        | 97.36         |
-| 9    | Linear RVM                   | **83.11**    | 95.55        | <u>96.99</u> | **99.12**     |
-| 10   | Kernel RVM                   | **83.11**    | 95.00        | 96.66        | 97.36         |
+|      | Algorithm                                | Diabetes   | Boston     |
+| ---- | ---------------------------------------- | ---------- | ---------- |
+| 1    | SVR                                      | **75.28%** | **88.23%** |
+| 2    | One-Class SVM                            | 48.31%     | 57.84%     |
+| 3    | Isolation Forest                         | 56.17%     | 62.74%     |
+| 4    | Auto-Encoder<br /> for Anomaly Detection | 60.67%     | 63.72%     |
+| 5    | Mixture Of Gaussian                      | 60.67%     | 63.72%     |
 
 
 
@@ -246,6 +446,364 @@ Accuracy  0.7528089887640449
 # Tutorial_Classification_2_AnomalyDetection
 
 위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 아래의 Tutorial Link를 통해 Notebook으로 각 Dataset에 따른 Algorithm의 속도와 성능을 비교할 수 있다.
+
+
+
+
+
+## 1. Tutorial Notebook 
+
+### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
+
+
+
+## 2. Setting
+
+### Datasets
+
+데이터셋은 아래와 같이 2개의 유명한 Tabular 형태의 Regression Dataset을 사용합니다. 
+
+|      | Datasets                      | Description        | Num Instances | Num Inputs (Xs) | Num Outputs (Ys) |
+| ---- | ----------------------------- | ------------------ | ------------- | --------------- | ---------------- |
+| 1    | Diabetes (Classification)     | 당뇨병 환자 데이터 | 768           | 8               | 1 (0, 1)         |
+| 2    | Breast Cancer(Classification) |                    | 569           | 30              | 1 (0, 1)         |
+| 3    | Digits (Classification)       |                    | 1797          | 64              | 1 (0 ~ 9)        |
+
+데이터셋은 아래와 같은 코드로 불러오게 됩니다.
+
+```python
+if dataset_name == 'diabetes':
+    df = pd.read_csv('diabetes.csv')
+    X = df.iloc[:,:-1].values   
+    y = df.iloc[:,-1].values    
+
+elif dataset_name == 'breast_cancer':
+    breast_cancer = datasets.load_breast_cancer()
+    X = breast_cancer.data
+    y = breast_cancer.target
+
+elif dataset_name == 'digits':
+    digits = datasets.load_digits()
+    X = digits.data
+    y = digits.target
+
+else:
+    pass
+```
+
+각 Dataset은 Classification Target이므로, 각 Dataset을 Anomaly에 사용하기 위하여 사용되는 각 양불 Class의 Label은 아래와 같다. Binary Class가 아닌 Multi-Target Classification의 경우, 하나의 Label을 불량으로 처리하므로, 자연스럽게 Imbalanced Classification Problem이 된다.
+
+- Diabetes : 1 (양성)
+- Breast Cancer : 1 (양성)
+- Digits : 5 (숫자 5)
+
+
+
+
+
+### Algorithms
+
+알고리즘은 아래와 Regression 알고리즘과 Anomaly Detection을 서로 비교합니다.
+
+- Regerssion 
+  - SVR을 사용하여 Regression Task에서 Regression Algorithm을 사용하고 예측한 값을 특정 Threshold로 Classification하여 양불을 판정하는데 사용합니다.
+- Anomaly Detection
+  - 4가지의 알고리즘(One-Class SVM, Isolation Forest, Autoencoder Anomaly Detection, Mixture Of Gaussian)을 사용하여, 데이터를 양불로 Binary Classification문제로 전처리 후, 양품 데이터만을 학습하여 Anomaly를 탐지한다.
+
+|      | Algorithm           | Target            | Description                               |
+| ---- | ------------------- | ----------------- | ----------------------------------------- |
+| 1    | Linear SVR          | Regression        | 선형 SVR                                  |
+| 2    | Kernel SVR          | Regression        | 선형 SVR + Kernel Trick(using rbf kernel) |
+| 3    | One-Class SVM       | Anomaly Detection |                                           |
+| 4    | Isolation Forest    | Anomaly Detection |                                           |
+| 5    | Autoencoder AD      | Anomaly Detection |                                           |
+| 6    | Mixture of Gaussian | Anomaly Detection |                                           |
+
+
+
+## 3. Usage Code
+
+### SVM
+
+해당 Dataset에서 성능이 좋은 SVM을 사용하여, Classification Task를 예측한다. 예측된 결과는 위의 Dataset전처리를 통해 양품/불량의 2-Class Classification을 수행한다. Linear SVM과 RBF SVM을 사용하였으며, param_grid에 있는 Hyper-parameter를 Grid Search하여 모델 최적화를 진행하였다.
+
+```python
+param_grid = [
+    {'kernel': ['linear'], 'C': [1.0, 2.0, 3.0, 10.]},
+    {'kernel': ['rbf'], 'C': [1.0, 2.0, 3.0, 5.0, 10.],
+    'gamma': [0.01, 0.03, 0.1, 0.3, 1.0, 3.0]},
+]
+
+elapsed_time_kernel_svm = []
+
+svm_classifier = SVC(kernel='rbf')
+# svm_classifier = svm_classifier.fit(x_train, y_train)
+
+start_time = datetime.now()
+grid_search = GridSearchCV(svm_classifier, param_grid, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_svc_classifier = grid_search.fit(x_train, y_train_a)
+elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
+```
+
+
+
+아래와 같이 예측한 값을 위에서 설정한 threshold값으로 양불(양품 +1, 불량 -1) Labeling을 해 준다. 이를 통해서 Answer Y값의 Classification된 값 과의 비교를 통해 Accuracy를 계산한다.
+
+```python
+start_time = datetime.now()
+y_pred = best_svc_classifier.predict(x_test)
+elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
+acc_svm_kernel = accuracy_score(y_test_a, y_pred)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_a, y_pred))
+print('Best Prameters ', grid_search.best_params_)
+print('Accuracy ', acc_svm_kernel)
+print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다.
+
+|                         | Diabetes               | Breast Cancer          | Digits                      |
+| ----------------------- | ---------------------- | ---------------------- | --------------------------- |
+| Confusion Matrix        | [[28 28]<br />[10 88]] | [[66  1]<br />[ 1 46]] | [[ 49   0] <br />[  0 311]] |
+| Classification Accuracy | 75.32%                 | 98.24%                 | 100%                        |
+
+
+
+### One-Class SVM
+
+One-Class SVM은 Scikit-Learn에 구현된 Nu-SVM을 사용하였다. 아래와같은 param_grid에 있는 Hyper-parameter를 Grid Searching하여 최적화를 진행하였으며 X_Train값 만을 사용하여 학습을 진행하였다.
+
+```python
+param_grid = [
+    {'kernel': ['linear'], 'nu': [0.05, 0.1, 0.25, 0,5, 0.7]},
+    {'kernel': ['rbf'], 'nu': [0.05, 0.1, 0.25, 0,5, 0.7],
+    'gamma': [0.01, 0.03, 0.1, 0.3, 0.05, 1.0]},
+]
+
+elapsed_time_kernel_svm = []
+
+svm_classifier = OneClassSVM(kernel='rbf')
+# svm_classifier = svm_classifier.fit(x_train, y_train)
+
+start_time = datetime.now()
+grid_search = GridSearchCV(svm_classifier, param_grid, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_svm_classifier = grid_search.fit(x_train_only)
+elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
+
+
+```
+
+
+
+Inference 결과는 아래와 같이 계산하였다.
+
+```python
+start_time = datetime.now()
+y_pred = best_svm_classifier.predict(x_test)
+elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
+
+acc_svm_kernel = accuracy_score(y_test_c, y_pred)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred))
+print('Best Prameters ', grid_search.best_params_)
+print('Accuracy ', acc_svm_kernel)
+print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
+# Isolation Forest 
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes                | Breast Cancer           | Digits                      |
+| -------------------------- | ----------------------- | ----------------------- | --------------------------- |
+| Confusion Matrix           | [[ 1 55]<br /> [ 7 91]] | [[60  7]<br /> [ 0 47]] | [[  3  46]<br /> [ 27 284]] |
+| Anomaly Detection Accuracy | 59.74%                  | 93.85%                  | 79.72%                      |
+
+
+
+### Isolation Forest
+
+```python
+iforest_classifier = IsolationForest()
+
+iforest_parameters = {'n_estimators': list(range(10, 200, 50)), 
+              'max_samples': list(range(20, 120, 20)), 
+              'contamination': [0.1, 0.2], 
+              'max_features': [5,15, 20], 
+              'bootstrap': [True, False], 
+              }
+
+elapsed_time_iforest = []
+
+start_time = datetime.now()
+iforest_grid_search = GridSearchCV(iforest_classifier, iforest_parameters, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_iforest_classifier = iforest_grid_search.fit(x_train_only)
+elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
+```
+
+
+
+```python
+# y_pred = xgb_classifier.predict(x_test)
+start_time = datetime.now()
+y_pred_c = best_iforest_classifier.predict(x_test)
+elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
+
+
+acc_iforest = accuracy_score(y_test_c, y_pred_c)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred_c))
+print("best parameters ", iforest_grid_search.best_params_)
+print('Accuracy ', acc_iforest)
+print('elapsed time ', elapsed_time_iforest)
+```
+
+
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes                | Breast Cancer           | Digits                      |
+| -------------------------- | ----------------------- | ----------------------- | --------------------------- |
+| Confusion Matrix           | [[23 33]<br /> [11 87]] | [[49 18]<br /> [ 5 42]] | [[ 16  33]<br /> [ 41 270]] |
+| Anomaly Detection Accuracy | 71.42%                  | 79.82%                  | 79.44%                      |
+
+
+
+
+
+### Auto-Encoder for Anomaly Detection
+
+```python
+class BasicClassification(nn.Module):
+    def __init__(self) -> None:
+        super(BasicClassification, self).__init__()
+
+        self.layer_1 = nn.Linear(NUM_INPUT, NUM_1ST_HIDDEN)
+        self.layer_2 = nn.Linear(NUM_1ST_HIDDEN, NUM_2ND_HIDDEN)
+        self.layer_3 = nn.Linear(NUM_2ND_HIDDEN, NUM_1ST_HIDDEN)
+        self.layer_4 = nn.Linear(NUM_1ST_HIDDEN, NUM_INPUT)
+
+        self.actvation_1 = nn.SELU()
+        self.actvation_2 = nn.SELU()
+        self.actvation_3 = nn.SELU()
+    
+    def forward(self, inputs):
+        x = self.actvation_1(self.layer_1(inputs))
+        x = self.actvation_2(self.layer_2(x))
+        x = self.actvation_3(self.layer_3(x))
+        x = self.layer_4(x)
+
+        return x
+        
+```
+
+
+
+```python
+result_reconstruct = abs(x_test - output_num).sum(axis=1)
+result_class = result_reconstruct.copy()
+result_class[result_reconstruct > THRESHOLD_FOR_AUTOENCODER] = -1
+result_class[result_reconstruct <= THRESHOLD_FOR_AUTOENCODER] = 1
+acc_ae = accuracy_score(y_test_a, result_class)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_a, result_class))
+print('Accuracy ', acc_ae)
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes                | Breast Cancer           | Digits                      |
+| -------------------------- | ----------------------- | ----------------------- | --------------------------- |
+| Confusion Matrix           | [[26 30]<br /> [20 78]] | [[45 22]<br /> [19 28]] | [[ 35  14]<br /> [ 10 301]] |
+| Anomaly Detection Accuracy | 67.53%                  | 64.03%                  | 93.33%                      |
+
+
+
+
+
+### Mixture Of Gaussian
+
+```python
+gmm_classifier = GaussianMixture()
+
+gmm_parameters ={'n_components' : [1, 2, 3,4,5,6, 7] , 'max_iter': [int(1e2), int(1e3), int(1e6)]}
+
+elapsed_time_gmm= []
+
+start_time = datetime.now()
+gmm_grid_search = GridSearchCV(gmm_classifier, gmm_parameters, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_gmm_classifier = gmm_grid_search.fit(x_train_only)
+elapsed_time_gmm.append((datetime.now()-start_time).total_seconds())
+
+```
+
+
+
+```python
+start_time = datetime.now()
+y_pred_c = best_gmm_classifier.predict(x_test)
+elapsed_time_gmm.append((datetime.now()-start_time).total_seconds())
+
+
+densities = best_gmm_classifier.score_samples(x_test)
+density_threshold = np.percentile(densities, THRESHOLD_FOR_DENSITY)
+anomalies = np.argwhere(densities < density_threshold)
+print(len(anomalies))
+
+real_anomaly = np.argwhere(y_test_c == -1)
+
+
+y_pred_anomalies = y_test_c.copy()
+y_pred_anomalies[densities < density_threshold] = -1
+y_pred_anomalies[densities >= density_threshold] = 1
+
+acc_gmm = accuracy_score(y_test_c, y_pred_anomalies)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred_anomalies))
+print("best parameters ", best_gmm_classifier.best_params_)
+print('Accuracy ', acc_gmm)
+print('elapsed time ', elapsed_time_gmm)
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+
+|                            | Diabetes                | Breast Cancer           | Digits                      |
+| -------------------------- | ----------------------- | ----------------------- | --------------------------- |
+| Confusion Matrix           | [[32 24]<br /> [24 74]] | [[56 11]<br /> [24 23]] | [[ 41   8]<br /> [ 42 269]] |
+| Anomaly Detection Accuracy | 68.83%                  | 69.29%                  | 86.11%                      |
+
+
+
+
+
+
+
+## 4. Result_Accuracy
+
+- 측정 단위 : 정확도 %
+- Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
+- Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
+- 모델은 Validation 기준으로 Loss가 가장 적은 Best Model로 Testing을 진행함
+
+|      | Algorithm                                | Diabetes   | Breast Cancer | Digits   |
+| ---- | ---------------------------------------- | ---------- | ------------- | -------- |
+| 1    | SVM                                      | **75.32%** | **98.24%**    | **100%** |
+| 2    | One-Class SVM                            | 59.74%     | 93.85%        | 79.72%   |
+| 3    | Isolation Forest                         | 71.42%     | 79.82%        | 79.44%   |
+| 4    | Auto-Encoder<br /> for Anomaly Detection | 67.53%     | 64.03%        | 93.33%   |
+| 5    | Mixture Of Gaussian                      | 68.83%     | 69.29%        | 86.11%   |
+
+
 
 
 
