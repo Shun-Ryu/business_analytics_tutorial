@@ -10,19 +10,19 @@
 
 
 
-### 1. Anomaly Detection for "From Regression to Binary Classification Task"
+### 1. Anomaly Detection for "Regression To Anomaly Detection"
 
 - Manufacturing 공정 등의 Data는 기본적으로 Target값이 Continuous한 경우가 많이 있다. 이런 경우, 특정 Threshold 이상의 값은 '이상치(Anomaly)'로, Threshold 이하의 값은 '정상치(Normal)'로 Target Data를 Binary Categorization을 하여, Anomaly Detection이나 Classification으로 문제를 풀려는 시도를 일반적으로 많이 생각한다.
 
 - 따라서 이렇게 근본적으로 Regression Task인 것들을 Thresholding하였을 때, 과연 Anomaly Detection과 같은 알고리즘이 잘 동작하는지 테스트를 진행 해 보았다. (특히 현업의 Manufacturing 공정에서는 대부분이 '정상'데이터이며 '이상'데이터는 매우 적은 Imbalanced한 Data가 대부분의 Case이다. 그러나 이번 실험에서는 Regression을 통한 Imbalanced한 부분을 없애기 위하여 Normal Class와 Abnormal Class를 5:5 수준으로 나누었다.)
 
-- 이를 통해 Anomaly Detection을 근본적 Regression Task에 써도 되는지 아닌지 그 한계를 알아보려고 한다.
+- 이를 통해 Anomaly Detection을 근본적 Regression Task에 써도 될지, 그 한계를 알아보려고 한다.
 
-### 2. Anomaly Detection for "From Supervised Classification Task"
+### 2. Anomaly Detection for "Classification To Anomaly Detection"
 
 - 일반적으로 Unsupervised기반의 Anomaly Detection보다 Supervised Classification이 성능이 더 높은 경우가 많이 있다.
 - 실제로 간단한 Task에서 Anomaly Detection이 Supervised Classification보다 어느정도의 성능의 차이가 있는지 알아보려 한다.
-- 이를 통해 Anomaly Detection이 Supervised Classification Task에 써도 되는지 아는지 그 한계를 알아보려 한다.
+- 이를 통해 Anomaly Detection이 Supervised Classification Task에 써도 될지, 그 한계를 알아보려 한다.
 
 
 
@@ -85,7 +85,7 @@
 
 - 
 
-# Tutorial_Competion for tabular datasets
+# Tutorial_Regression_2_AnomalyDetection
 
 위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 아래의 Tutorial Link를 통해 Notebook으로 각 Dataset에 따른 Algorithm의 속도와 성능을 비교할 수 있다.
 
@@ -101,42 +101,125 @@
 
 ### Datasets
 
-- 데이터셋은 아래와 같이 4개의 유명한 Tabular 형태의 Dataset을 사용합니다. 
+데이터셋은 아래와 같이 2개의 유명한 Tabular 형태의 Regression Dataset을 사용합니다. 
 
-|      | Datasets      | Description                                    | Num Instances | Num Inputs (Xs) | Num Classes (Ys) |
-| ---- | ------------- | ---------------------------------------------- | ------------- | --------------- | ---------------- |
-| 1    | Diabetes      | 당뇨병 환자 데이터 (0, 1)                      | 768           | 8               | 2                |
-| 2    | Digits        | 0~9까지의 숫자 Dataset. Mini MNIST (8*8 Image) | 1797          | 64              | 10               |
-| 4    | Breast Cancer | 위스콘신 유방암 데이터 (0, 1)                  | 569           | 30              | 2                |
+|      | Datasets                        | Description                                                  | Num Instances | Num Inputs (Xs) | Num Outputs (Ys) |
+| ---- | ------------------------------- | ------------------------------------------------------------ | ------------- | --------------- | ---------------- |
+| 1    | Diabetes (Regression)           | 당뇨병 환자 데이터 (1년 후 당뇨의 진행정도를 Target값으로 함) | 442           | 10              | 1                |
+| 2    | Boston House Price (Regression) | Boston의 집값에 대한 Data                                    | 1797          | 64              | 10               |
+
+데이터셋은 아래와 같은 코드로 불러오게 됩니다.
+
+```python
+if dataset_name == 'diabetes_r':
+    x, y= datasets.load_diabetes(return_x_y=true)
+elif dataset_name == 'boston_r':
+    data_url = "http://lib.stat.cmu.edu/datasets/boston"
+    raw_df = pd.read_csv(data_url, sep="\s+", skiprows=22, header=none)
+    x = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :2]])
+    y = raw_df.values[1::2, 2]
+else:
+    pass
+```
+
+각 Dataset은 Regression Target이므로, 각 Dataset을 Anomaly에 사용하기 위하여 사용되는 Threshold값은 아래와 같다. 각 값은 전체 데이터의 Median 값이다. Regression Task에 Imbalanced에 의한 영향을 줄이기 위해 중앙값을 사용하여 양불 Data의 Balance를 맞추었다.
+
+- Diabetes : 140 
+- Boston House Price : 21
+
+
 
 
 
 ### Algorithms
 
-- Algorithm은 본 실험에서 다루고 있는 기본적으로 Linear SVM과 Kernel SVM을 사용한다. 2개의 Parameter를 Grid Search함 (7*6 조합)
-- 비정형 데이터에 압도적인 Artifical Neural Network계열인, Basic ANN과 Google(2019)에서 만든 Tabular에 특화된 TabNet을 비교 대상으로 추가하였다. Neural Network계열은 시간이 오래 걸리므로, 따로 Grid Search하지 않음
-- Boosting 계열인 XGBoost, LightGBM, CatBoost를 비교군으로 두었다. 3가지 모두 Kaggle과 같은 Competition에서 Tabular Dataset에 대하여 매우 뛰어난 성능을 보여주었다.(딥러닝 보다 좋은 경우 많음). 2개의 Parameter를 Grid Search함 (7*6 조합)
-- Bagging계열이며 실제로도 현업에서 매우 좋은 성능을 갖고 있는 Random Forest를 사용하여 비교하였다. 2개의 Parameter를 Grid Search함 (7*6 조합)
-- SVM의 Bayesian버전인 RVM(Relevance Vector Machine) 도 비교군으로 삼음. MS가 특허를 갖고 있었음 (2019년 특허 만료) RVM은 Hyperparameter가 적은 편이며 자동 추정이 가능함. 그러나 Training 시간이 오래 걸려 따로 Grid Search하지 않음. 특히 Training시 O(N^3)라 오래 걸림. Inference Time은 매우 짧음. SVM과 달리 Global Optimum을 보장하지는 않으나, 실험적으로 SVM보다 Generalization에 좋은 편임. RVM은 Big Dataset에서 매우 느리다는 단점과 함께, RVM이 뜰 때 쯤, Deep Learning이 떠서 안타깝게 잘 사용하지는 않음. Small Dataset에서는 Gaussian Process와 함께 매우 Accuracy가 높다고 알려져 있음
+알고리즘은 아래와 Regression 알고리즘과 Anomaly Detection을 서로 비교합니다.
 
-|      | Algorithm                    | Description                                                  |
-| ---- | ---------------------------- | ------------------------------------------------------------ |
-| 1    | Linear SVM                   | 선형 SVM                                                     |
-| 2    | Kernel SVM                   | 선형 SVM + Kernel Trick(using rbf kernel)                    |
-| 3    | Basic ANN                    | 기본적인 Artifical Neural Network. 1개의 Intput Layer와 2개의 Hidden Layer, 1개의 Output Layer로 구성됨. 200 epochs 돌림. Dropout 최적화 및 SELU Activation을 사용으로 Small Tabular Dataset상에서 경험적으로 일부분 최적화된 세팅을 갖춤 |
-| 4    | TabNet (Deep Learning Model) | Transformer를 사용한 Tabular에 특화된 최신(2019) 딥러닝 모델. Kaggle에서 Boosting계열을 뛰어넘는 좋은 성능을 나타냄. 특히 Data가 많을수록 성능 향상치가 높음. 100 epochs 돌림. Small Dataset에서는 약함 |
-| 5    | XGBoost                      | Boosting계열의 대표주자. 속도를 극한으로 추구하며, 동시에 Generalization 능력도 탁월함. Hyperparameter가 매우 많음 |
-| 6    | LightGBM                     | Boosting계열의 대표주자 2. Hyperparameter가 매우 많음        |
-| 7    | CatBoost                     | Boosting계열의 대표주자 3. Hyperparameter가 매우 많음        |
-| 8    | Random Forest                | Bagging계열의 대표주자. 많은 Case에 있어서 SVM보다 좋은 성능을 나타냄. 그러나 SVM보다 Hyper parameter가 많은게 또 단점임 |
-| 9    | Linear RVM                   | Linear버전의 RVM. Bayesian방식으로 변형된 버전의 SVM.        |
-| 10   | Kernel RVM                   | RVM의 rbf kernel을 사용한 버전.                              |
+- Regerssion 
+  - SVR을 사용하여 Regression Task에서 Regression Algorithm을 사용하고 예측한 값을 특정 Threshold로 Classification하여 양불을 판정하는데 사용합니다.
+- Anomaly Detection
+  - 4가지의 알고리즘(One-Class SVM, Isolation Forest, Autoencoder Anomaly Detection, Mixture Of Gaussian)을 사용하여, 데이터를 양불로 Binary Classification문제로 전처리 후, 양품 데이터만을 학습하여 Anomaly를 탐지한다.
+
+|      | Algorithm           | Target            | Description                               |
+| ---- | ------------------- | ----------------- | ----------------------------------------- |
+| 1    | Linear SVR          | Regression        | 선형 SVR                                  |
+| 2    | Kernel SVR          | Regression        | 선형 SVR + Kernel Trick(using rbf kernel) |
+| 3    | One-Class SVM       | Anomaly Detection |                                           |
+| 4    | Isolation Forest    | Anomaly Detection |                                           |
+| 5    | Autoencoder AD      | Anomaly Detection |                                           |
+| 6    | Mixture of Gaussian | Anomaly Detection |                                           |
 
 
 
+## 3. Usage Code
+
+### SVR
+
+성능이 어느정도 검증된 기법인 SVR을 사용하여, Regression Task를 예측한다. 그리고 예측된 결과를 Threshold로 나누어, 양불을 판정한다. 아래와 같은 코드로 학습과 추론하여 Regression을 예측한다. Linear SVR과 RBF SVR을 사용하였으며, param_grid에 있는 Hyper-parameter를 Grid Search하여 모델 최적화를 진행하였다.
+
+```python
+param_grid = [
+    {'kernel': ['linear'], 'C': [1.0, 2.0, 3.0, 10., 30., 100.]},
+    {'kernel': ['rbf'], 'C': [1.0, 2.0, 3.0, 5.0, 10., 30., 100.],
+    'gamma': [0.01, 0.03, 0.1, 0.3, 1.0, 3.0]},
+]
+
+elapsed_time_kernel_svr = []
+
+svr_regressor = SVR(kernel='rbf')
+# svm_classifier = svm_classifier.fit(x_train, y_train)
+
+start_time = datetime.now()
+grid_search = GridSearchCV(svr_regressor, param_grid, cv=7, scoring="neg_mean_squared_error", verbose=2)
+best_svr_regressor = grid_search.fit(x_train, y_train)
+elapsed_time_kernel_svr.append((datetime.now()-start_time).total_seconds())
+
+start_time = datetime.now()
+y_pred = best_svr_regressor.predict(x_test)
+elapsed_time_kernel_svr.append((datetime.now()-start_time).total_seconds())
+
+```
 
 
-## 3. Result_Accuracy
+
+아래와 같이 예측한 값을 위에서 설정한 threshold값으로 양불(양품 +1, 불량 -1) Labeling을 해 준다. 이를 통해서 Answer Y값의 Classification된 값 과의 비교를 통해 Accuracy를 계산한다.
+
+```python
+y_pred_c = y_pred.copy()
+y_pred_c[y_pred > threshold_anomaly] = -1
+y_pred_c[y_pred <= threshold_anomaly] = 1
+
+acc_svr_kernel = accuracy_score(y_test_c, y_pred_c)
+
+print('Confusion Matrix\n', confusion_matrix(y_test_c, y_pred_c))
+print('Best Prameters ', grid_search.best_params_)
+print('Accuracy ', acc_svr_kernel)
+print('Elapsed Time(train, test) ', elapsed_time_kernel_svr)
+```
+
+
+
+그 결과 다음과 같은 결과를 얻을 수 있다.
+
+|                  | Diabetes               | Boston |
+| ---------------- | ---------------------- | ------ |
+| Confusion Matrix | [[34 11]<br/> [11 33]] |        |
+
+
+
+```
+Confusion Matrix
+ [[34 11]
+ [11 33]]
+Best Prameters  {'C': 100.0, 'gamma': 0.1, 'kernel': 'rbf'}
+Accuracy  0.7528089887640449
+```
+
+
+
+
+
+## 4. Result_Accuracy
 
 - 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
@@ -160,47 +243,11 @@
 
 
 
-## 4. Result_Training Time
+# Tutorial_Classification_2_AnomalyDetection
 
-- 측정 단위 : Second
-- CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
-- GPU : Nvidia Mobile 3050ti 사용
-
-|      | Algorithm                    | Diabetes                | Digits                  | Iris        | Breast Cancer |
-| ---- | ---------------------------- | ----------------------- | ----------------------- | ----------- | ------------- |
-| 1    | Linear SVM                   | **0.69**                | **1.62**                | **0.08**    | **0.21**      |
-| 2    | Kernel SVM                   | 4.30                    | <u>34.91</u>            | <u>0.58</u> | <u>1.83</u>   |
-| 3    | Basic ANN                    | 110.09 (GPU, 200epochs) | 174.86 (GPU, 200epochs) | 7.39        | 27.62 (GPU)   |
-| 4    | TabNet (Deep Learning Model) | 149.32 (GPU, 100epochs) | 345.10 (GPU, 100epochs) | 29.91       | 106.47 (GPU)  |
-| 5    | XGBoost                      | 9.44                    | 47.81                   | 8.34        | 7.70          |
-| 6    | LightGBM                     | <u>4.02</u>             | 44.31                   | 4.59        | 6.03          |
-| 7    | CatBoost                     | 20.90                   | 58.90                   | 18.41       | 41.69         |
-| 8    | Random Forest                | 25.47                   | 41.16                   | 24.65       | 33.16         |
-| 9    | Linear RVM                   | 102.08                  | 2371.65 (39분 소요!)    | 45.46       | 74.22         |
-| 10   | Kernel RVM                   | 85.93                   | 1846.79 (30분 소요!)    | 30.16       | 80.05         |
+위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 아래의 Tutorial Link를 통해 Notebook으로 각 Dataset에 따른 Algorithm의 속도와 성능을 비교할 수 있다.
 
 
-
-
-
-## 5. Result_Inference Time
-
-- 측정 단위 : Second
-- CPU : AMD Ryzen 7 5800U 사용 (Balanced Mode)
-- GPU : Nvidia Mobile 3050ti 사용
-
-|      | Algorithm                    | Diabetes      | Digits           | Iris          | Breast Cancer |
-| ---- | ---------------------------- | ------------- | ---------------- | ------------- | ------------- |
-| 1    | Linear SVM                   | 0.0033        | 0.0088           | **0.0001**    | <u>0.0009</u> |
-| 2    | Kernel SVM                   | 0.0061        | 0.042            | 0.0010        | 0.0019        |
-| 3    | Basic ANN                    | 0.0016 (GPU)  | **0.0029 (GPU)** | 0.0020 (GPU)  | 0.0019 (GPU)  |
-| 4    | TabNet (Deep Learning Model) | 0.1037 (GPU)  | 0.2753 (GPU)     | 0.0263 (GPU)  | 0.1176 (GPU)  |
-| 5    | XGBoost                      | 0.0020        | 0.0053           | 0.0030        | 0.0034        |
-| 6    | LightGBM                     | **0.0009**    | 0.0050           | 0.0010        | <u>0.0009</u> |
-| 7    | CatBoost                     | 0.0019        | 0.0110           | <u>0.0009</u> | 0.0046        |
-| 8    | Random Forest                | 0.0029        | 0.0288           | 0.0029        | 0.0066        |
-| 9    | Linear RVM                   | <u>0.0010</u> | 0.0076           | 0.0020        | 0.0010        |
-| 10   | Kernel RVM                   | 0.0013        | <u>0.0037</u>    | 0.0032        | **0.0001**    |
 
 
 
