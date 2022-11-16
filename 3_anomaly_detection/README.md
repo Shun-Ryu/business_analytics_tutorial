@@ -26,6 +26,8 @@
 
 
 
+위의 2가지 문제를 우리는 2가지 Tutorial을 통해 알아보고자 한다. 
+
 
 
 # Table of Contents
@@ -65,7 +67,6 @@
 
 ## 1. Basic Concept
 
-- - -
 
 
 
@@ -88,15 +89,19 @@
 
 
 
-# Tutorial_Regression_2_AnomalyDetection
+# Tutorial_1_Regression_To_AnomalyDetection
 
-위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 아래의 Tutorial Link를 통해 Notebook으로 각 Dataset에 따른 Algorithm의 속도와 성능을 비교할 수 있다.
+이번 튜토리얼에서는 앞서 설명한 것과 같이 근본적으로 Regression인 Task를 Threshold를 통해 Anomaly Detection (일종의 One-Class Binary Classification)이 가능할지 알아보는 실험이다. 해당 실험을 위해 우리는 하나의 Regression(SVR)과 여러 Anomaly Detection 알고리즘의 성능을 비교 하고자 한다.
+
+![image-20221117010800581](./attachments/image-20221117010800581.png)
+
+위와 같은 Logistic Regression이 아마 유사한 개념이라고 볼 수 있다. Regression 결과(Logit)를 확률로 변환하여(Logistic), 0.5라는 Threshold로 나눠서 Classification을 하는 것과 유사한 개념으로 Regression을 사용해 Threshold하여 Classification을 하는 아주 직관적인 방법과 Anomaly Detection의 비교라고 이해하면 되겠다.
 
 
 
 ## 1. Tutorial Notebook 
 
-### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
+### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/3_anomaly_detection/Tutorials/tutorial_anomaly_detection_from_R_task.ipynb)
 
 
 
@@ -104,14 +109,14 @@
 
 ### Datasets
 
-데이터셋은 아래와 같이 2개의 유명한 Tabular 형태의 Regression Dataset을 사용합니다. 
+데이터셋은 아래와 같이 2개의 유명한 Tabular 형태의 Regression Dataset을 사용한다. 두개의 Dataset모두 Regression Target이므로 Thresholding을 통해 목적에 맞게 수정하여 사용한다. 전체 데이터 중 Training Set은 64%, Validation Set은 16%, Test Set은 20%의 Data비율로 나누었다.
 
 |      | Datasets                        | Description                                                  | Num Instances | Num Inputs (Xs) | Num Outputs (Ys) |
 | ---- | ------------------------------- | ------------------------------------------------------------ | ------------- | --------------- | ---------------- |
 | 1    | Diabetes (Regression)           | 당뇨병 환자 데이터 (1년 후 당뇨의 진행정도를 Target값으로 함) | 442           | 10              | 1                |
 | 2    | Boston House Price (Regression) | Boston의 집값에 대한 Data                                    | 506           | 13              | 1                |
 
-데이터셋은 아래와 같은 코드로 불러오게 됩니다.
+데이터셋은 아래와 같은 코드로 불러오게 된다.
 
 ```python
 if dataset_name == 'diabetes_r':
@@ -127,8 +132,8 @@ else:
 
 각 Dataset은 Regression Target이므로, 각 Dataset을 Anomaly에 사용하기 위하여 사용되는 Threshold값은 아래와 같다. 각 값은 전체 데이터의 Median 값이다. Regression Task에 Imbalanced에 의한 영향을 줄이기 위해 중앙값을 사용하여 양불 Data의 Balance를 맞추었다.
 
-- Diabetes : 140 
-- Boston House Price : 21
+- **Diabetes : 140** 
+- **Boston House Price : 21**
 
 
 
@@ -136,21 +141,21 @@ else:
 
 ### Algorithms
 
-알고리즘은 아래와 Regression 알고리즘과 Anomaly Detection을 서로 비교합니다.
+알고리즘은 아래와 Regression 알고리즘과 Anomaly Detection을 서로 비교한다.
 
 - Regerssion 
-  - SVR을 사용하여 Regression Task에서 Regression Algorithm을 사용하고 예측한 값을 특정 Threshold로 Classification하여 양불을 판정하는데 사용합니다.
+  - SVR을 사용하여 Regression Task에서 Regression Algorithm을 사용하고 예측한 값을 특정 Threshold로 Classification하여 양불을 판정하는데 사용한다.
 - Anomaly Detection
   - 4가지의 알고리즘(One-Class SVM, Isolation Forest, Autoencoder Anomaly Detection, Mixture Of Gaussian)을 사용하여, 데이터를 양불로 Binary Classification문제로 전처리 후, 양품 데이터만을 학습하여 Anomaly를 탐지한다.
 
-|      | Algorithm           | Target            | Description                               |
-| ---- | ------------------- | ----------------- | ----------------------------------------- |
-| 1    | Linear SVR          | Regression        | 선형 SVR                                  |
-| 2    | Kernel SVR          | Regression        | 선형 SVR + Kernel Trick(using rbf kernel) |
-| 3    | One-Class SVM       | Anomaly Detection |                                           |
-| 4    | Isolation Forest    | Anomaly Detection |                                           |
-| 5    | Autoencoder AD      | Anomaly Detection |                                           |
-| 6    | Mixture of Gaussian | Anomaly Detection |                                           |
+|      | Algorithm                              | Target            | Description                                                  |
+| ---- | -------------------------------------- | ----------------- | ------------------------------------------------------------ |
+| 1    | Linear SVR                             | Regression        | 선형 SVR                                                     |
+| 2    | Kernel SVR                             | Regression        | 선형 SVR + Kernel Trick(using rbf kernel)                    |
+| 3    | One-Class SVM                          | Anomaly Detection | 양품 Sample만으로 학습하여 Anomaly Detection을 수행하는 SVM의 변형 버전(Nu-SVM) |
+| 4    | Isolation Forest                       | Anomaly Detection | 양품 Sample만으로 학습하여 간단한 직선의 조합을 통해 Anomaly를 Detection하는 알고리즘 |
+| 5    | Autoencoder<br />for Anomaly Detection | Anomaly Detection | 양품 Sample만을 통해 Neural Network기반으로 데이터를 압축하고, 동일하게 Reconstruction하는 Task를 수행하여, Anomaly Detection하는 알고리즘 |
+| 6    | Mixture of Gaussian                    | Anomaly Detection | 여러개의 Gaussian의 선형 결합을 통해 분포를 벗어나는 Data를 찾아내어 Anomaly Detection을 수행하는 알고리즘 |
 
 
 
@@ -202,7 +207,7 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svr)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다.
+그 결과 다음과 같은 결과를 얻을 수 있다. 결과는 Regression을 수행하고 Thresholding을 통해 Classification 분류를 수행한 결과이다. 특정한 Threshold보다 클 경우 불량으로 처리하였다. (-1 class)
 
 |                                                           | Diabetes               | Boston                  |
 | --------------------------------------------------------- | ---------------------- | ----------------------- |
@@ -213,7 +218,7 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svr)
 
 ### One-Class SVM
 
-One-Class SVM은 Scikit-Learn에 구현된 Nu-SVM을 사용하였다. 아래와같은 param_grid에 있는 Hyper-parameter를 Grid Searching하여 최적화를 진행하였으며 X_Train값 만을 사용하여 학습을 진행하였다.
+One-Class SVM은 Scikit-Learn에 구현된 Nu-SVM을 사용하였다. 아래와같은 param_grid에 있는 Hyper-parameter를 Grid Searching하여 최적화를 진행하였으며 X_Train값 만을 사용하여 학습을 진행하였다. 학습은 Training_Only set을 통해 Class가 1인 양품 데이터만 학습 하였다.
 
 ```python
 param_grid = [
@@ -237,7 +242,7 @@ elapsed_time_kernel_svm.append((datetime.now()-start_time).total_seconds())
 
 
 
-Inference 결과는 아래와 같이 계산하였다.
+Inference 결과는 아래와 같이 계산하였다. 단순한 Classification과 유사하게 Anomaly Detection을 수행할 수 있다.
 
 ```python
 start_time = datetime.now()
@@ -255,7 +260,7 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. Regression과 비교했을때 매우 성능이 좋지않음을 알 수 있다. 특히 Confusion Matrix를 보면 False Negative의 비율이 굉장히 높음을 알 수 있다.
 
 |                            | Diabetes               | Boston                 |
 | -------------------------- | ---------------------- | ---------------------- |
@@ -265,6 +270,8 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
 
 
 ### Isolation Forest
+
+Isolation Forest알고리즘을 통해 양품 데이터(+1 Class)만을 학습 하였다. Hyper Parameter도 아래와 같이 iforest_parameters에 설정된 값을 Grid-Search 하였다.
 
 ```python
 iforest_classifier = IsolationForest()
@@ -286,8 +293,9 @@ elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
 
 
 
+Inference는 아래와 같이 수행한다. 역시 Classification과 동일한 방식으로 예측하고, Test정답값과의 비교를 수행한다.
+
 ```python
-# y_pred = xgb_classifier.predict(x_test)
 start_time = datetime.now()
 y_pred_c = best_iforest_classifier.predict(x_test)
 elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
@@ -303,7 +311,7 @@ print('elapsed time ', elapsed_time_iforest)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. 역시 Regression과 비교했을때 매우 성능이 좋지않음을 알 수 있다. Isolation Forest도 Confusion Matrix를 보면 False Negative의 비율이 높다는 것을 알 수 있다. 즉, 대부분 불량으로 처리한다.
 
 |                            | Diabetes               | Boston                 |
 | -------------------------- | ---------------------- | ---------------------- |
@@ -314,10 +322,12 @@ print('elapsed time ', elapsed_time_iforest)
 
 ### Auto-Encoder for Anomaly Detection
 
+딥러닝 계열의 Auto-Encoder를 사용하여 Anomaly Detection을 수행한다. SELU Activation Function을 통해 BatchNorm등을 지우고도 성능을 어느정도 도달 할 수 있게 모델을 세팅하였다. Encoder는 2개, Decoder도 2개의 Layer를 가지고 있다.
+
 ```python
-class BasicClassification(nn.Module):
+class BasicAutoEncoder(nn.Module):
     def __init__(self) -> None:
-        super(BasicClassification, self).__init__()
+        super(BasicAutoEncoder, self).__init__()
 
         self.layer_1 = nn.Linear(NUM_INPUT, NUM_1ST_HIDDEN)
         self.layer_2 = nn.Linear(NUM_1ST_HIDDEN, NUM_2ND_HIDDEN)
@@ -338,7 +348,7 @@ class BasicClassification(nn.Module):
         
 ```
 
-
+Inference는 아래와 같다. Test 입력값 X와 모델 출력 예측값과의 절대값 차이를 비교하여, Reconstruction Error를 구하여, 그에 따라 Thresholding하여 양불을 판정하였다.
 
 ```python
 result_reconstruct = abs(x_test - output_num).sum(axis=1)
@@ -356,9 +366,7 @@ print('Accuracy ', acc_ae)
 
 
 
-
-
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. Regression과 비교했을때 매우 성능이 좋지않음을 알 수 있다. (그래도 One-Class SVM과 Isolation Forest보다는 좋은 결과를 나타내긴 한다.)
 
 |                            | Diabetes                | Boston                 |
 | -------------------------- | ----------------------- | ---------------------- |
@@ -368,6 +376,8 @@ print('Accuracy ', acc_ae)
 
 
 ### Mixture Of Gaussian
+
+MoG를 사용하여 Anomaly Detection을 수행한다. Parameter는 gmm_parameters에 있는 것을 Grid-Search하여 모델을 최적화를 수행하였다. 역시 하나의 양품 Label에 대한 Training Set으로 학습을 수행하였다.
 
 ```python
 gmm_classifier = GaussianMixture()
@@ -384,6 +394,8 @@ elapsed_time_gmm.append((datetime.now()-start_time).total_seconds())
 ```
 
 
+
+MoG의 경우 Threshold를 지정하기 위하여 Percentile(백분위수)를 사용하여 Density에 대해서 몇 % 미만까지 Anomaly를 정할지 Threshold를 결정하게 된다. AutoEncoder에서 Reconstruction Error에 대한 Threshold를 지정하는 것과 유사한 Hyper-Parameter이다.
 
 ```python
 start_time = datetime.now()
@@ -413,7 +425,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. Regression과 비교했을때 매우 성능이 좋지않음을 알 수 있다. (그래도 One-Class SVM과 Isolation Forest보다는 좋은 결과를 나타내긴 한다. Auto Encoder와 유사한 결과를 보인다.)
 
 |                            | Diabetes               | Boston                 |
 | -------------------------- | ---------------------- | ---------------------- |
@@ -427,7 +439,7 @@ print('elapsed time ', elapsed_time_gmm)
 ## 4. Result_Accuracy
 
 - 측정 단위 : 정확도 %
-- Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
+- Dataset은 Testset 20%, Training 64%, Validation 16%를 기준으로 진행하였다.
 - Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
 - 모델은 Validation 기준으로 Loss가 가장 적은 Best Model로 Testing을 진행함
 
@@ -443,17 +455,23 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-# Tutorial_Classification_2_AnomalyDetection
+# Tutorial_2_Classification_To_AnomalyDetection
 
-위에서 우리는 SVM에 대해서 상세히 알아보았으니, 과연 SVM이 현재에도 Tabular Data에서 적절한 선택인지 비교를 해보자. 아래의 Tutorial Link를 통해 Notebook으로 각 Dataset에 따른 Algorithm의 속도와 성능을 비교할 수 있다.
+이번 Tutorial은 기본적인 Supervised Classification Task에 대하여, SVM과 같은 Supervised Classification 학습 알고리즘과, 같은 Data에 대하여 각 Class의 양품 데이터만 학습하여 판단내리는 Anomaly Detection의 성능에 대한 비교를 수행하고자 한다. 고려대 Business Analytics 수업에서의 강필성 교수님의 Anomaly Detection 혹은 Classification 알고리즘의 선택 기준에 따르면 아래와 같은 그림으로 Decision Making을 수행할 수 있다.
 
 
+
+![image-20221117010428263](./attachments/image-20221117010428263.png)
+
+
+
+즉 위의 말을 해석하자면, 왠만하면 Classification으로 하고, 정말 불균형이 심하고 Anomaly Class의 절대적 데이터량이 작은 경우에만 Anomaly Detection을 쓰라는 의미라고 이해할 수 있겠다. 그렇다면 과연 Supervised Classification 알고리즘이 같은 환경 Setting(Dataset 종류 및 Data Instace 비율)에서 Anomaly Detection과 얼마나 차이가 나는지 실험해 보는 Tutorial을 진행 해 보겠다.
 
 
 
 ## 1. Tutorial Notebook 
 
-### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/2_kernel_based_learning/Tutorials/tutorial_svm_comparison.ipynb)
+### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/3_anomaly_detection/Tutorials/tutorial_anomaly_detection_from_C_task.ipynb)
 
 
 
@@ -461,15 +479,15 @@ print('elapsed time ', elapsed_time_gmm)
 
 ### Datasets
 
-데이터셋은 아래와 같이 2개의 유명한 Tabular 형태의 Regression Dataset을 사용합니다. 
+데이터셋은 아래와 같이 3개의 유명한 Tabular 형태의 Classification Dataset을 사용한다.  전체 데이터 중 Training Set은 64%, Validation Set은 16%, Test Set은 20%의 Data비율로 나누었다.
 
-|      | Datasets                      | Description        | Num Instances | Num Inputs (Xs) | Num Outputs (Ys) |
-| ---- | ----------------------------- | ------------------ | ------------- | --------------- | ---------------- |
-| 1    | Diabetes (Classification)     | 당뇨병 환자 데이터 | 768           | 8               | 1 (0, 1)         |
-| 2    | Breast Cancer(Classification) |                    | 569           | 30              | 1 (0, 1)         |
-| 3    | Digits (Classification)       |                    | 1797          | 64              | 1 (0 ~ 9)        |
+|      | Datasets                      | Description                                                  | Num Instances | Num Inputs (Xs) | Num Outputs (Ys) |
+| ---- | ----------------------------- | ------------------------------------------------------------ | ------------- | --------------- | ---------------- |
+| 1    | Diabetes (Classification)     | 당뇨병 환자 데이터 (양성, 음성). 총 2개 Class.               | 768           | 8               | 1 (0, 1)         |
+| 2    | Breast Cancer(Classification) | 위스콘신 유방암 데이터 (양성, 음성). 총 2개 Class.           | 569           | 30              | 1 (0, 1)         |
+| 3    | Digits (Classification)       | 0~9까지의 숫자 데이터. Mini MNIST(8*8 image). 총 10개 Class. | 1797          | 64              | 1 (0 ~ 9)        |
 
-데이터셋은 아래와 같은 코드로 불러오게 됩니다.
+데이터셋은 아래와 같은 코드로 불러오게 된다.
 
 ```python
 if dataset_name == 'diabetes':
@@ -493,9 +511,13 @@ else:
 
 각 Dataset은 Classification Target이므로, 각 Dataset을 Anomaly에 사용하기 위하여 사용되는 각 양불 Class의 Label은 아래와 같다. Binary Class가 아닌 Multi-Target Classification의 경우, 하나의 Label을 불량으로 처리하므로, 자연스럽게 Imbalanced Classification Problem이 된다.
 
-- Diabetes : 1 (양성)
-- Breast Cancer : 1 (양성)
-- Digits : 5 (숫자 5)
+- Anomaly of Diabetes Dataset : 1 (양성)
+- Anomaly of Breast Cancer Dataset : 1 (양성)
+- Anomaly of Digits Dataset : 5 (숫자 5)
+
+
+
+위의 모든 Dataset은 Anomaly는 -1로, 그 외의 것은 Normal로 +1로 Re-Labeling하여 Binary Classification문제로 바꾼다. SVM은 2개의 Class에 대한 모든 학습을 진행하고, 나머지 Anomaly Detection 알고리즘들은 +1인 Normal Data에 대해서만 학습을 진행하고 Anomaly를 찾아내도록 학습한다.
 
 
 
@@ -503,21 +525,20 @@ else:
 
 ### Algorithms
 
-알고리즘은 아래와 Regression 알고리즘과 Anomaly Detection을 서로 비교합니다.
+알고리즘은 아래와 Classification 알고리즘과 Anomaly Detection을 서로 비교한다.
 
-- Regerssion 
-  - SVR을 사용하여 Regression Task에서 Regression Algorithm을 사용하고 예측한 값을 특정 Threshold로 Classification하여 양불을 판정하는데 사용합니다.
+- Classification
+  - SVM을 사용하여 Classification Task에서 Supervised Classification Algorithm을 사용한다. +1과 -1의 이진 분류 문제이다.
 - Anomaly Detection
   - 4가지의 알고리즘(One-Class SVM, Isolation Forest, Autoencoder Anomaly Detection, Mixture Of Gaussian)을 사용하여, 데이터를 양불로 Binary Classification문제로 전처리 후, 양품 데이터만을 학습하여 Anomaly를 탐지한다.
 
-|      | Algorithm           | Target            | Description                               |
-| ---- | ------------------- | ----------------- | ----------------------------------------- |
-| 1    | Linear SVR          | Regression        | 선형 SVR                                  |
-| 2    | Kernel SVR          | Regression        | 선형 SVR + Kernel Trick(using rbf kernel) |
-| 3    | One-Class SVM       | Anomaly Detection |                                           |
-| 4    | Isolation Forest    | Anomaly Detection |                                           |
-| 5    | Autoencoder AD      | Anomaly Detection |                                           |
-| 6    | Mixture of Gaussian | Anomaly Detection |                                           |
+|      | Algorithm                              | Target            | Description                                                  |
+| ---- | -------------------------------------- | ----------------- | ------------------------------------------------------------ |
+| 1    | SVM                                    | Classification    | 이진 분류 알고리즘. 선형/비선형 SVM 두가지 모두 Hyper-Param Searching에 활용해 최적 모델 찾음 |
+| 3    | One-Class SVM                          | Anomaly Detection |                                                              |
+| 4    | Isolation Forest                       | Anomaly Detection |                                                              |
+| 5    | Autoencoder<br />for Anomaly Detection | Anomaly Detection |                                                              |
+| 6    | Mixture of Gaussian                    | Anomaly Detection |                                                              |
 
 
 
@@ -616,7 +637,7 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. SVM과 비교했을때 매우 성능이 좋지않음을 알 수 있다. 특히 Diabetes와 Digits는 False Negative가 굉장히 높으며(그냥 다 불량으로 처리한다), Digits같은 경우 20% 이상의 Accuracy 차이가 발생한다. 반면 Breast Cancer는 SVM보다는 성능이 낮으나, 그래도 93.85%라는 준수한 성능을 보이는 경우도 존재한다.
 
 |                            | Diabetes                | Breast Cancer           | Digits                      |
 | -------------------------- | ----------------------- | ----------------------- | --------------------------- |
@@ -626,6 +647,8 @@ print('Elapsed Time(train, test) ', elapsed_time_kernel_svm)
 
 
 ### Isolation Forest
+
+Isolation Forest알고리즘을 통해 양품 데이터(+1 Class)만을 학습 하였다. Hyper Parameter도 아래와 같이 iforest_parameters에 설정된 값을 Grid-Search 하였다.
 
 ```python
 iforest_classifier = IsolationForest()
@@ -645,7 +668,7 @@ best_iforest_classifier = iforest_grid_search.fit(x_train_only)
 elapsed_time_iforest.append((datetime.now()-start_time).total_seconds())
 ```
 
-
+Inference는 아래와 같이 수행한다. 역시 Classification과 동일한 방식으로 예측하고, Test정답값과의 비교를 수행한다.
 
 ```python
 # y_pred = xgb_classifier.predict(x_test)
@@ -666,7 +689,7 @@ print('elapsed time ', elapsed_time_iforest)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. SVM과 비교했을때 모두 성능이 좋지 못하다. 그래도 Diabetes는 SVM보다 5% 이하의 성능 저하가 있었기 때문에 나쁘지 않은 결과라고도 볼 수 있겠다. 반면 Breast Cancer와 Digits는 SVM 대비 매우 성능이 저조하다.
 
 |                            | Diabetes                | Breast Cancer           | Digits                      |
 | -------------------------- | ----------------------- | ----------------------- | --------------------------- |
@@ -679,10 +702,12 @@ print('elapsed time ', elapsed_time_iforest)
 
 ### Auto-Encoder for Anomaly Detection
 
+딥러닝 계열의 Auto-Encoder를 사용하여 Anomaly Detection을 수행한다. SELU Activation Function을 통해 BatchNorm등을 지우고도 성능을 어느정도 도달 할 수 있게 모델을 세팅하였다. Encoder는 2개, Decoder도 2개의 Layer를 가지고 있다.
+
 ```python
-class BasicClassification(nn.Module):
+class BasicAutoEncoder(nn.Module):
     def __init__(self) -> None:
-        super(BasicClassification, self).__init__()
+        super(BasicAutoEncoder, self).__init__()
 
         self.layer_1 = nn.Linear(NUM_INPUT, NUM_1ST_HIDDEN)
         self.layer_2 = nn.Linear(NUM_1ST_HIDDEN, NUM_2ND_HIDDEN)
@@ -703,7 +728,7 @@ class BasicClassification(nn.Module):
         
 ```
 
-
+Inference는 아래와 같다. Test 입력값 X와 모델 출력 예측값과의 절대값 차이를 비교하여, Reconstruction Error를 구하여, 그에 따라 Thresholding하여 양불을 판정하였다.
 
 ```python
 result_reconstruct = abs(x_test - output_num).sum(axis=1)
@@ -718,7 +743,7 @@ print('Accuracy ', acc_ae)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. Supervised Classification인 SVM과 비교했을때 매우 성능이 좋지않음을 알 수 있다. 그래도 다른 Anomaly Detection 알고리즘들 보다는 Digits에서 가장 좋은 결과를 보인다.(93.33%) 이는 어느정도 Digits Dataset에서는 AE가 나쁘지 않은 결과를 보일 수 있다는 것을 알 수 있다.
 
 |                            | Diabetes                | Breast Cancer           | Digits                      |
 | -------------------------- | ----------------------- | ----------------------- | --------------------------- |
@@ -730,6 +755,8 @@ print('Accuracy ', acc_ae)
 
 
 ### Mixture Of Gaussian
+
+MoG를 사용하여 Anomaly Detection을 수행한다. Parameter는 gmm_parameters에 있는 것을 Grid-Search하여 모델을 최적화를 수행하였다. 역시 하나의 양품 Label에 대한 Training Set으로 학습을 수행하였다.
 
 ```python
 gmm_classifier = GaussianMixture()
@@ -746,6 +773,8 @@ elapsed_time_gmm.append((datetime.now()-start_time).total_seconds())
 ```
 
 
+
+MoG의 경우 Threshold를 지정하기 위하여 Percentile(백분위수)를 사용하여 Density에 대해서 몇 % 미만까지 Anomaly를 정할지 Threshold를 결정하게 된다. AutoEncoder에서 Reconstruction Error에 대한 Threshold를 지정하는 것과 유사한 Hyper-Parameter이다.
 
 ```python
 start_time = datetime.now()
@@ -775,7 +804,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-그 결과 다음과 같은 결과를 얻을 수 있다. (매우 성능이 좋지않다. 🔥)
+그 결과 다음과 같은 결과를 얻을 수 있다. MoG도 역시 SVM보다 모두 성능이 떨어진다. 전반적으로 AE와 유사한 성능의 성향을 보인다. 모든 결과를 보았을때 딱히 특출나게 어느 Dataset에 좋은 결과라고 해석하기는 힘들 것 같다.
 
 |                            | Diabetes                | Breast Cancer           | Digits                      |
 | -------------------------- | ----------------------- | ----------------------- | --------------------------- |
@@ -786,12 +815,10 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-
-
 ## 4. Result_Accuracy
 
 - 측정 단위 : 정확도 %
-- Dataset은 Testset 20%, Training 72%, Validation 8%를 기준으로 진행하였다.
+- Dataset은 Testset 20%, Training 64%, Validation 16%를 기준으로 진행하였다.
 - Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
 - 모델은 Validation 기준으로 Loss가 가장 적은 Best Model로 Testing을 진행함
 
@@ -809,61 +836,46 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-
-
 # Final Insights
 
-## 1. Training Time 관점
+## 1. Regression To Anomaly Detection
 
-- **SVM은 타 방식 대비 전반적으로 장점을 갖고 있음** ✅
+|      | Algorithm                                | Diabetes   | Boston     |
+| ---- | ---------------------------------------- | ---------- | ---------- |
+| 1    | SVR                                      | **75.28%** | **88.23%** |
+| 2    | One-Class SVM                            | 48.31%     | 57.84%     |
+| 3    | Isolation Forest                         | 56.17%     | 62.74%     |
+| 4    | Auto-Encoder<br /> for Anomaly Detection | 60.67%     | 63.72%     |
+| 5    | Mixture Of Gaussian                      | 60.67%     | 63.72%     |
 
-- SVM은 전반적으로 Training Time이 매우 우수하며, 같은 시간 대비 Boosting, Bagging, NN, RVM 계열들 대비 다양한 Hyper Parameter를 탐색할 수 있음. SVM보다 빠른 방식은 크게 차이는 나지 않으나 Diabetes Dataset에서의 LightGBM정도 밖에 존재하지 않았음 (그러나 Parallel Threading을 쓴다면 Boosting 계열이 더 빠를 수 있음)
-- 물론 Training Time 등의 속도는 어떠한 언어로 된 구현체(ex. C, Rust 등)인지에 따라 다르고, Coding Trick을 썼느냐에 따라 다를 수 있음. 그리고 SVM은 매우 Optimization된 Code로 Scikit-Learn에 구현되어 있기 때문에 이러한 결과를 보였을 것 같음. 그러나 XGBoost나 LightGBM같은 경우도 속도를 높이기 위한 다양한 방식(ex. Cache Hit Optimization 등)을 사용하기 때문에, 완전 다른 알고리즘이 불리하다고 보기는 힘듬.
-- 그러나 XGBoost 같은 경우 알고리즘 구현 방식 자체가 Thread Processing을 가정하기 때문에, single thread기반에서는 속도적 이득을 얻기가 힘드리라 봄
-- 따라서 ARM Cortex A가 아닌, 그 외의 Real-Time Embedded System에서의 Training에서는 SVM이 타 알고리즘을 압도하는 속도적인 이익을 얻을 것이라 생각됨
-- 그리고 Tabular Data에서 Hyper Parmeter Searching을 가미한 Baseline 모델을 찾아내는데 SVM이 매우 적합하리라 생각됨
-
-
-
-## 2. Inference Time 관점
-
-- **SVM은 타 방식 대비 Big Dataset에서는 단점을 갖고 있음** ❌
-- **그러나 SVM은 타 방식 대비 Small Dataset에서는 나쁘지 않는 속도를 갖고 있음(Single Thread Embedded Real-Time System에 적합)** ✅
-
-- Diabetes는 700개 정도의 Dataset인데, 이정도 크기 이후부터 Inference에서는 SVM이 다른 방식 대비 빠른 속도를 보이지는 않음. 물론 GPU를 사용하지 않는 NN계열보다는 빠를 수 있겠으나, Boosting, Random Forest, RVM 등에 모두 속도가 밀림
-
-- 그러나 Small Dataset을 한번에 Inference할 때에는 장점을 갖추고 있음. 이를 보았을때 Single Thread의 Embedded System에서 Real-Time Inference나 FPGA, ASIC으로 구현했을때의 속도는 SVM이 가장 빠르리라 생각됨 (특히 Inference Time에 Single Instance를 처리하는 속도가 가장 빠르리라 예상)
-
-- 알고리즘 특성상 Boosting계열에서 정렬 등이 필요하여 이때 Boot-up되는 속도가 SVM대비 오래 걸리는 것으로 추정됨
-
-  
+- 🔥**결론적으로 Anomaly Detection은 위와 같은 근본적 Regression Task에서는 사용을 자제하는 게 좋을 것 같다.**
+- 근본적으로 Regression의 특성을 지니고 있는 Dataset에 대하여 Threshold를 나눠서 Classification 문제로 변형후 Anomaly Detection으로 풀 때에는 전반적으로 Anomaly Detection알고리즘이 제대로 학습이 되지 않음을 알 수 있다.
+- 최근의 딥러닝 연구결과들을 보면 Target이 Continous한 Regression Task냐, 혹은 Discrete한 Classification이냐에 따라서 알고리즘이 학습하는 Feature(Representation)이 전혀 다른 양상을 보인다는 것이 밝혀지고 있다. 그 연구들에서는 Regression Task에서는 Feature들 역시 Continous하고 Ordering이 있는 방식으로 Representation된다는 것을 보여주고 있다.
+- 이러한 의미로, Anomaly Detection은 특히나 Imbalanced Classification상황에서 사용되는 경우가 많은데, 역시 Imbalanced한 상황에서 Classification으로 풀려고하는 접근 방법론도 많이 있다. 그런데 이러한 Regression Task에서 Imbalanced Classification Method를 사용하면 잘 학습이 안되는 경우가 대부분인데, 이것도 역시 근본적인 Regression Task가 Data상으로 품고 있는 Representation이 Classification과는 완전히 다른 양상을 띄고 있기 때문이라고 이해될 수 있겠다.
 
 
 
-## 3. Accuracy 관점 
+## 2. Classification To Anomaly Detection
 
-- **SVM이 타 방식 대비 Accuracy가 유사하거나 더 좋은 경우도 있음** ✅
-- Accuracy도 SVM이 전체적으로 모든 Dataset에서 다른 알고리즘 대비 가장 좋거나(Diabetes, Digits), 2~3위 수준(Irs, Breast Cancer)의 Accuracy를 나타냄. 
-- 특히나 Linear SVM (Soft Margin)이 다른 모델들 대비 크게 떨어지지 않는 Accuracy를 보여줌으로써, Kernel이 필요한 특이한 Case의 임의로 생성된 Dataset이 아닌한, 매우 빠르고 정확하게 Classification을 하는 능력을 갖추었다고 보여짐. 특히나 Dimension이 커지면서 Linear Model로 분류되는 Hyper Plane을 찾기가 더 쉽지 않을까 생각됨.
-- 물론 Dataset이 크지 않고 단순하며, 전반적으로 Accuracy가 유사하게 높으므로(물론 Use-Case에 따라서 0.1% Accuracy도 매우 크다고 볼 수 있긴 하지만) 이 결과로만 가지고 SVM이 다른 알고리즘보다 확실히 뛰어나다고 볼수는 없음.
-- 그러나 확실한건, **Training Time과 Inference Time대비, SVM이 다른 최신의 알고리즘보다 떨어진다고 보기 어려우며, 오히려 더 좋은 경우 있다고 말할 수 있음**.  따라서 Silver Bullet은 없으므로, SVM알고리즘을 실무에서 꼭 검증 해 볼 필요는 있음
+|      | Algorithm                                | Diabetes   | Breast Cancer | Digits   |
+| ---- | ---------------------------------------- | ---------- | ------------- | -------- |
+| 1    | SVM                                      | **75.32%** | **98.24%**    | **100%** |
+| 2    | One-Class SVM                            | 59.74%     | 93.85%        | 79.72%   |
+| 3    | Isolation Forest                         | 71.42%     | 79.82%        | 79.44%   |
+| 4    | Auto-Encoder<br /> for Anomaly Detection | 67.53%     | 64.03%        | 93.33%   |
+| 5    | Mixture Of Gaussian                      | 68.83%     | 69.29%        | 86.11%   |
 
-
-
-## 4. 그 외의 생각들
-
-- 그 외 Tabnet같은 경우 좋은 성능을 내지 못하는 경우가 있는데, Dataset에 적은 경우 특히나 그러하며(Iris, Breast Cancer), Tabnet은 category encoding에 유리한 측면이 있다고 보여, 좀 더 복잡한 column을 가진 dataset, 좀 더 큰 dataset에서 활용되면 좋을 것이라 생각됨
-- 그리고 Basic ANN은 Dropout과 SELU등의 활용으로 Tabular에서 다른 알고리즘 못지않은 성능을 보일 수 있다는 것을 확인함
-- 또한 RVM은 타 알고리즘 대비 Training Time이 상대적으로 매우 길었지만, Inference Time은 타 알고리즘대비 매우 빠른 편임. 또한 성능도 DIgits Dataset 외에는 타 알고리즘 대비 상대적으로  높은 성능을 보이고 있음. 
-- 그러나 RVM은 Digits 데이터가 1700개 가량 밖에 안되는 경우에도, 35분이나 걸리는 아주 긴 Training시간을 갖음. 따라서 RVM은 Small Dataset에서만 꼭 고려해야할 알고리즘으로 생각됨(Hyper Parameter Tunning도 자동으로 이루어질 수 있으며, Output에 대한 Uncertainty를 구할 수 있음)
-- RVM은 Gaussian Process와 유사하기 때문에 데이터가 커짐에 따라 매우 느려지고 O(N^3), Feature의 개수가 늘어날수록 Accuracy가 떨어지는 경향을 보이지 않나 생각이 듬
-- RVM Training의 빠른 구현 Tipping, M., & Faul, A. (2003). Fast marginal likelihood maximization for sparse Bayesian models도 존재하므로, 해당 구현을 사용한다면 이번 Tutorial의 구현보다는 더 긍정적인 느낌을 받았으리라 생각됨
-- Random Forest는 전반적으로 Training Time이나 Inference Time에서 큰 장점은 없었으며(빠른 편이 아니었음), Accuracy 성능 역시 다른 알고리즘 보다 딱히 뛰어나다고 보이지는 않음(Breaset Cancer제외 Boosting보다 전반적으로 떨어짐). 향후에는 Random Forest보다는, SVM, Boosting, RVM을 좀 더 고려하지 않을까 생각이 듬 (물론 Hyper Parameter를 좀 더 테스트 하면 다를 수는 있을 듯)
-- Boosting 계열에서 비교하자면, 속도 측면에서는 LightGBM이 빠른 편이지만 Accuracy 측면에서는 XGBoost나 CatBoost가 더 좋은 성능을 보이며 속도도 크게 느리지는 않음. LightGBM보다 XGBoost나 CatBoot를 좀 더 고려하는게 좋지 않을까 생각됨
+- 🔥**결론적으로 Anomaly Detection은 위와 같은 근본적 Supervised Classification Task에서는 사용을 자제하는 게 좋을 것 같다.**
+- Representation Learning을 수행할 때, Target값이 주어진 상황에서 Machine Learning알고리즘들이 잘 표현을 학습한다는 것이 알려져 있다.
+- 특히나 Real-World의 문제에서는 대부분 시간이 걸리더라도 Labeling을 통하여 Supervised Learning으로 풀려고 하는데, 이는 위의 결과와 마찬가지로 Supervised Learning이 일반적으로 Unsupervised Learning보다 더 성능이 대부분 좋기 때문이다. 그러한 Trend때문에 요즘에 Contrasitive, Self-Training 등이 좀 더 각광을 받는게 아닌가 싶기도 하다.
+- 성능을 위해서라면 Anomaly Detection과 같은 방법보다는 Supervised나 혹은 Semi-Supervised를 사용하는 편이 좀 더 성능 향상에 도움이 되리라 생각한다.
+- 물론 Imbalanced한 상황이 매우 극단적일 경우는, Supervised Classification을 아얘 사용하지 못하는 경우가 있다. 또한 근본적으로 Labeling을 하기가 정말로 어려운 상황에서도 마찬가지로 Supervised Classification이 바로 사용되지 못하는 경우가 있다. 이러한 경우에는 Anomaly Detection도 물론 적용하여 좋은 효과를 발휘할 수도 있다.
+- 그러나 Supervised Classification을 사용하기 어렵더라도, 관점에 따라 위의 Tutorial 1처럼 Regression Task로 문제를 변환할 수 있을 경우, 그리고 동시에 Imbalanced Data상황에서는 Anomaly Detection보다는 Regression을 수행하기를 추천한다.
 
 
 
-## 5. 결론
 
-- 결론적으로는 SVM알고리즘은 지금도 쓸만한 알고리즘이라고 말할 수 있음.
 
+## 결론
+
+- Anoamaly Detection은 그 한계성도 분명히 있으므로, 무지성으로 쉽게 바로 사용하지 말고, 각 문제가 갖고 있는 근본적인 상황을 고려하여 적합한 알고리즘을 잘 적용을 해야 한다.
