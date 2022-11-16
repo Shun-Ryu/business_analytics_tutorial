@@ -849,9 +849,11 @@ print('elapsed time ', elapsed_time_gmm)
 | 5    | Mixture Of Gaussian                      | 60.67%     | 63.72%     |
 
 - 🔥**결론적으로 Anomaly Detection은 위와 같은 근본적 Regression Task에서는 사용을 자제하는 게 좋을 것 같다.**
+- 위의 표를 확인하자면, Regression Task에서 SVR Regression으로 Regression한 후에, 양불을 판정하는 방법이 다른 모든 Anomaly Detection 방법을 압도한다.
 - 근본적으로 Regression의 특성을 지니고 있는 Dataset에 대하여 Threshold를 나눠서 Classification 문제로 변형후 Anomaly Detection으로 풀 때에는 전반적으로 Anomaly Detection알고리즘이 제대로 학습이 되지 않음을 알 수 있다.
 - 최근의 딥러닝 연구결과들을 보면 Target이 Continous한 Regression Task냐, 혹은 Discrete한 Classification이냐에 따라서 알고리즘이 학습하는 Feature(Representation)이 전혀 다른 양상을 보인다는 것이 밝혀지고 있다. 그 연구들에서는 Regression Task에서는 Feature들 역시 Continous하고 Ordering이 있는 방식으로 Representation된다는 것을 보여주고 있다.
 - 이러한 의미로, Anomaly Detection은 특히나 Imbalanced Classification상황에서 사용되는 경우가 많은데, 역시 Imbalanced한 상황에서 Classification으로 풀려고하는 접근 방법론도 많이 있다. 그런데 이러한 Regression Task에서 Imbalanced Classification Method를 사용하면 잘 학습이 안되는 경우가 대부분인데, 이것도 역시 근본적인 Regression Task가 Data상으로 품고 있는 Representation이 Classification과는 완전히 다른 양상을 띄고 있기 때문이라고 이해될 수 있겠다.
+- 현업에서는 물리적이며 Continous한 수치 측정의 결과가 대부분이므로, 이러한 특성을 띄는 경우가 아주 많이 있다.(물론 영상 양불판정 같은 것은 근본적으로 Classification문제일 확률이 높다. 근데 이런 Vision Task들은 대부분이 너무나 풀기 쉬운 문제들이다..)
 
 
 
@@ -866,7 +868,8 @@ print('elapsed time ', elapsed_time_gmm)
 | 5    | Mixture Of Gaussian                      | 68.83%     | 69.29%        | 86.11%   |
 
 - 🔥**결론적으로 Anomaly Detection은 위와 같은 근본적 Supervised Classification Task에서는 사용을 자제하는 게 좋을 것 같다.**
-- Representation Learning을 수행할 때, Target값이 주어진 상황에서 Machine Learning알고리즘들이 잘 표현을 학습한다는 것이 알려져 있다.
+- 위의 표를 확인자하면, Classification문제에 있어서 Label을 다 사용할 수 있다면 역시 Supervised Classification알고리즘이 다른 모든 것을 압도하는 모습을 볼 수 있따. (물론 몇몇 Dataset에서 특정 방법론이 SVM보다 아주 조금 성능이 떨어지면서 해결하는 경우도 있다.)
+- 최근 연구 결과를 보면 Representation Learning을 수행할 때, Target값이 주어진 상황에서 Machine Learning알고리즘들이 잘 표현을 학습한다는 것이 알려져 있다.
 - 특히나 Real-World의 문제에서는 대부분 시간이 걸리더라도 Labeling을 통하여 Supervised Learning으로 풀려고 하는데, 이는 위의 결과와 마찬가지로 Supervised Learning이 일반적으로 Unsupervised Learning보다 더 성능이 대부분 좋기 때문이다. 그러한 Trend때문에 요즘에 Contrasitive, Self-Training 등이 좀 더 각광을 받는게 아닌가 싶기도 하다.
 - 성능을 위해서라면 Anomaly Detection과 같은 방법보다는 Supervised나 혹은 Semi-Supervised를 사용하는 편이 좀 더 성능 향상에 도움이 되리라 생각한다.
 - 물론 Imbalanced한 상황이 매우 극단적일 경우는, Supervised Classification을 아얘 사용하지 못하는 경우가 있다. 또한 근본적으로 Labeling을 하기가 정말로 어려운 상황에서도 마찬가지로 Supervised Classification이 바로 사용되지 못하는 경우가 있다. 이러한 경우에는 Anomaly Detection도 물론 적용하여 좋은 효과를 발휘할 수도 있다.
