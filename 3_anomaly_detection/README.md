@@ -1,4 +1,4 @@
-# Anomaly Detection의 한계를 알아보자.
+# 🤔Anomaly Detection의 한계를 알아보자.
 
 ## The limitation of anomaly detection algorithm
 
