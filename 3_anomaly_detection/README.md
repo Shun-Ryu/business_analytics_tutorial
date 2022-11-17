@@ -33,28 +33,35 @@
 # Table of Contents
 
 - [Background of Anomaly Detection](#Background-of-Anomaly-Detection)
-  
+
   - [1. Basic Concept](#1-Basic-Concept)
   - [2. One-Class SVM](#2-One-Class-SVM)
   - [3. Isolation Forest](#3-Isolation-Forest)
   - [4. Auto-Encoder for Anomaly Detection](#4-Auto-Encoder-for-Anomaly-Detection)
   - [5. Mixture of Gaussian](#5-Mixture-of-Gaussian)
-  
-- [Tutorial 1. Regression To Anomaly Detection](#Tutorial_1_Regression_To_AnomalyDetection)
-  
+
+- [Tutorial 1. Regression To Anomaly Detection](#Tutorial-1-Regression-To-Anomaly-Detection)
+
   - [1-1. Tutorial Notebook](#1-1-Tutorial-Notebook)
   - [1-2. Setting](#1-2-Setting)
   - [1-3. Usage Code](#1-3-Usage-Code)
   - [1-4. Result (Accuracy)](#1-4-Result_Accuracy)
-  
+
+- [Tutorial 2. Classification To Anomaly Detection](#Tutorial-2-Classification-To-Anomaly-Detection)
+
+  - [2-1. Tutorial Notebook](#2-1-Tutorial-Notebook)
+  - [2-2. Setting](#2-2-Setting)
+  - [2-3. Usage Code](#2-3-Usage-Code)
+  - [2-4. Result (Accuracy)](#2-4-Result_Accuracy)
+
 - [Final Insights](#Final-Insights)
-  
-  - [1. Training Time 관점](#1-Training-Time-관점)
-  - [2. Inference Time 관점](#2-Inference-Time-관점)
-  - [3. Accuracy 관점](#3-Accuracy-관점)
-  - [4. 그 외의 생각들](#4-그-외의-생각들)
-  - [5. 결론](#5-결론)
-  
+
+  - [1. Regression To Anomaly Detection](#1-Regression-To-Anomaly-Detection)
+  - [2. Classification To Anomaly Detection](#2-Classification-To-Anomaly-Detection)
+  - [3. Conclusion](#3-Conclusion)
+
+- [References](#References)
+
   
 
 -------
@@ -175,7 +182,7 @@ MoG는 Latent Vector인 Weight의 존재로 인하여, 각각의 m Cluster에 �
 
 ----
 
-# Tutorial_1_Regression_To_AnomalyDetection
+# Tutorial 1. Regression To Anomaly Detection
 
 이번 튜토리얼에서는 앞서 설명한 것과 같이 근본적으로 Regression인 Task를 Threshold를 통해 Anomaly Detection (일종의 One-Class Binary Classification)이 가능할지 알아보는 실험이다. 해당 실험을 위해 우리는 하나의 Regression(SVR)과 여러 Anomaly Detection 알고리즘의 성능을 비교 하고자 한다.
 
@@ -541,7 +548,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 ----
 
-# Tutorial_2_Classification_To_AnomalyDetection
+# Tutorial 2. Classification To Anomaly Detection
 
 이번 Tutorial은 기본적인 Supervised Classification Task에 대하여, SVM과 같은 Supervised Classification 학습 알고리즘과, 같은 Data에 대하여 각 Class의 양품 데이터만 학습하여 판단내리는 Anomaly Detection의 성능에 대한 비교를 수행하고자 한다.  
 
@@ -957,7 +964,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-## 3. 결론
+## 3. Conclusion
 
 - Anoamaly Detection은 그 한계성도 분명히 있으므로, 무지성으로 쉽게 바로 사용하지 말고, 각 문제가 갖고 있는 근본적인 상황을 고려하여 적합한 알고리즘을 잘 적용을 해야 한다.
 
