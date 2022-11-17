@@ -1,10 +1,8 @@
 # Anomaly Detection의 한계를 알아보자.
 
-
-
 ## The limitation of anomaly detection algorithm
 
-
+![image-20221117174234200](./attachments/image-20221117174234200.png)
 
 🔥이번 Tutorial에서는 Anomaly Detection이 실제 Practical한 상황에서 어떠한 제약점이 있는지 파악해 보고, 어떠할 때 쓰면 안되는지 확인 해 보고자 한다. 확인해보고자 하는 문제는 2가지 이다.
 
@@ -176,7 +174,7 @@ MoG는 Latent Vector인 Weight의 존재로 인하여, 각각의 m Cluster에 �
 
 위의 Expectation과 Maximization을 하나씩 수행하면서, 더이상 각 Parameter값이 변하지 않고 수렴하게 되면 멈추게 되는 것이 바로 EM알고리즘이다. 이를 통해 학습을 해 나가면 아래와 같이 분포를 MoG가 학습하게 된다.
 
-![MoG_EM](./attachments/MoG_EM.gif)
+![image18](./attachments/image18.gif)
 
 
 
