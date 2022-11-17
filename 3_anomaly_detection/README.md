@@ -36,16 +36,16 @@
   
   - [1. Basic Concept](#1-Basic-Concept)
   - [2. One-Class SVM](#2-One-Class-SVM)
-  - [3. Linear SVM](#3-Linear-SVM)
-  - [4. Kernel SVM](#4-Kernel-SVM)
+  - [3. Isolation Forest](#3-Isolation-Forest)
+  - [4. Auto-Encoder for Anomaly Detection](#4-Auto-Encoder-for-Anomaly-Detection)
+  - [5. Mixture of Gaussian](#5-Mixture-of-Gaussian)
   
-- [Tutorial - Competion for tabular datasets](#Tutorial_Competion-for-tabular-datasets)
+- [Tutorial 1. Regression To Anomaly Detection](#Tutorial_1_Regression_To_AnomalyDetection)
   
-  - [1. Tutorial Notebook](#1-Tutorial-Notebook)
-  - [2. Setting](#2-Setting)
-  - [3. Result (Accuracy)](#3-Result_Accuracy)
-  - [4. Result (Training Time)](#4-Result_Training-Time)
-  - [5. Result (Inference Time)](#5-Result_Inference-Time)
+  - [1-1. Tutorial Notebook](#1-1-Tutorial-Notebook)
+  - [1-2. Setting](#1-2-Setting)
+  - [1-3. Usage Code](#1-3-Usage-Code)
+  - [1-4. Result (Accuracy)](#1-4-Result_Accuracy)
   
 - [Final Insights](#Final-Insights)
   
@@ -185,13 +185,13 @@ MoG는 Latent Vector인 Weight의 존재로 인하여, 각각의 m Cluster에 �
 
 
 
-## 1. Tutorial Notebook 
+## 1-1. Tutorial Notebook 
 
 ### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/3_anomaly_detection/Tutorials/tutorial_anomaly_detection_from_R_task.ipynb)
 
 
 
-## 2. Setting
+## 1-2. Setting
 
 ### Datasets
 
@@ -238,14 +238,14 @@ else:
 | ---- | -------------------------------------- | ----------------- | ------------------------------------------------------------ |
 | 1    | Linear SVR                             | Regression        | 선형 SVR                                                     |
 | 2    | Kernel SVR                             | Regression        | 선형 SVR + Kernel Trick(using rbf kernel)                    |
-| 3    | One-Class SVM                          | Anomaly Detection | 양품 Sample만으로 학습하여 Anomaly Detection을 수행하는 SVM의 변형 버전(Nu-SVM) |
-| 4    | Isolation Forest                       | Anomaly Detection | 양품 Sample만으로 학습하여 간단한 직선의 조합을 통해 Anomaly를 Detection하는 알고리즘 |
+| 3    | One-Class SVM                          | Anomaly Detection | 양품 Sample만으로 학습하여 Anomaly Detection을 수행하는 SVM의 변형 버전(Nu-SVM). 양품 Sample Data가 원점에서 가장 멀어지게 하는 Hyper Plane을 찾는다. |
+| 4    | Isolation Forest                       | Anomaly Detection | 양품 Sample만으로 학습하여 간단한 Decision Tree 조합을 통해 Anomaly를 Detection하는 알고리즘. 분류 Path Length가 길수록 양품이다. |
 | 5    | Autoencoder<br />for Anomaly Detection | Anomaly Detection | 양품 Sample만을 통해 Neural Network기반으로 데이터를 압축하고, 동일하게 Reconstruction하는 Task를 수행하여, Anomaly Detection하는 알고리즘 |
 | 6    | Mixture of Gaussian                    | Anomaly Detection | 여러개의 Gaussian의 선형 결합을 통해 분포를 벗어나는 Data를 찾아내어 Anomaly Detection을 수행하는 알고리즘 |
 
 
 
-## 3. Usage Code
+## 1-3. Usage Code
 
 ### SVR
 
@@ -522,7 +522,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-## 4. Result_Accuracy
+## 1-4. Result_Accuracy
 
 - 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 64%, Validation 16%를 기준으로 진행하였다.
@@ -549,13 +549,13 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-## 1. Tutorial Notebook 
+## 2-1. Tutorial Notebook 
 
 ### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/3_anomaly_detection/Tutorials/tutorial_anomaly_detection_from_C_task.ipynb)
 
 
 
-## 2. Setting
+## 2-2. Setting
 
 ### Datasets
 
@@ -614,15 +614,15 @@ else:
 
 |      | Algorithm                              | Target            | Description                                                  |
 | ---- | -------------------------------------- | ----------------- | ------------------------------------------------------------ |
-| 1    | SVM                                    | Classification    | 이진 분류 알고리즘. 선형/비선형 SVM 두가지 모두 Hyper-Param Searching에 활용해 최적 모델 찾음 |
-| 3    | One-Class SVM                          | Anomaly Detection |                                                              |
-| 4    | Isolation Forest                       | Anomaly Detection |                                                              |
-| 5    | Autoencoder<br />for Anomaly Detection | Anomaly Detection |                                                              |
-| 6    | Mixture of Gaussian                    | Anomaly Detection |                                                              |
+| 1    | SVM (Linear, Kernel)                   | Classification    | 이진 분류 알고리즘. 선형/비선형 SVM 두가지 모두 Hyper-Param Searching에 활용해 최적 모델 찾음 |
+| 3    | One-Class SVM                          | Anomaly Detection | 양품 Sample만으로 학습하여 Anomaly Detection을 수행하는 SVM의 변형 버전(Nu-SVM). 양품 Sample Data가 원점에서 가장 멀어지게 하는 Hyper Plane을 찾는다. |
+| 4    | Isolation Forest                       | Anomaly Detection | 양품 Sample만으로 학습하여 간단한 Decision Tree 조합을 통해 Anomaly를 Detection하는 알고리즘. 분류 Path Length가 길수록 양품이다. |
+| 5    | Autoencoder<br />for Anomaly Detection | Anomaly Detection | 양품 Sample만을 통해 Neural Network기반으로 데이터를 압축하고, 동일하게 Reconstruction하는 Task를 수행하여, Anomaly Detection하는 알고리즘 |
+| 6    | Mixture of Gaussian                    | Anomaly Detection | 여러개의 Gaussian의 선형 결합을 통해 분포를 벗어나는 Data를 찾아내어 Anomaly Detection을 수행하는 알고리즘 |
 
 
 
-## 3. Usage Code
+## 2-3. Usage Code
 
 ### SVM
 
@@ -895,7 +895,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-## 4. Result_Accuracy
+## 2-4. Result_Accuracy
 
 - 측정 단위 : 정확도 %
 - Dataset은 Testset 20%, Training 64%, Validation 16%를 기준으로 진행하였다.
