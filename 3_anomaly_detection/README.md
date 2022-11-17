@@ -67,25 +67,45 @@
 
 ## 1. Basic Concept
 
+Anomaly Detection(이상탐지)란 말 그대로 Data상에서 정상(Normal)에서 벗어난 이상(Anomaly) 데이터를 탐지 해 내는 기술이다. 다양한 기법이 있으나, 기본적으로는 정상(Normal) 데이터로만 데이터를 학습하여, 그 정상 Distribution을 일정 범위 벗어나는 것들을 Anomaly로써 Detection하는 기술이다. 즉, Unsupervised Learning 계열이라고 볼 수 있다. (정확히는 Semi-Supervised 혹은 Self-Supervised Learning)
 
+![image-20221117131236843](./attachments/image-20221117131236843.png)
+
+
+
+이상탐지는 아래와 같이 Supervised Anomaly Detection(사실 Classification임), Unsupervised Anomaly Detection, Semi-Supervised Anomaly Detection으로 나뉠 수 있다. 정확히는 이렇게 나뉘지만 편의상 많은 사람들이 혹은 본 Tutorial에서는 Unsupervised와 Semi-Supervised를 따로 구별하지 않고 Unsupervised로 부르도록 하겠다. (Semi-Supervised 중 정확히는 One-Class Learning이다.)
+
+![image-20221117131051297](./attachments/image-20221117131051297.png)
+
+
+
+Anomaly Detection은 Class Label이 없거나, 정상 Label만 있을 경우 혹은 이상 Data가 굉장히 적은 Imbalanced Dataset 상황에서 사용해 볼 수 있는 좋은 방법론 중 하나이다. 그러나 이 Tutorial에서 다루려는 내용도 마찬가지지만 Anomaly Detection은 정확한 Context에 맞는 상황에서 사용해야 하며, 아무 상황에서나 적용해서 쉽게 성능을 낼 수 있는 방법론은 아니다. 따라서 아래와 같은 알고리즘 선택(Anomaly Detection vs. Classification)의 Decision Making Process를 따르는 것이 좋다. (해당 의사결정방법론은 고려대학교 산업경영공학부 강필성 교수님 Reference입니다.)
+
+![image-20221117131643910](./attachments/image-20221117131643910.png)
+
+Anomaly Detection은 크게 Density Based, Model Based, Distance Based로 3가지 Taxonomy로 나누어서 생각해 볼 수 있다. 하기 부터는 Model Based인 One-Class SVM, Isolation Forest, Autoencoder에 대해 다루고, Density Based 중 매우 많이 사용되는 Mixture Of Gaussian(Gaussian Mixture Model) 기법에 대해서 간단히 정리 해 보고자 한다. 
+
+
+
+그리고 해당 이론적인 내용을 간단히 파악하고 2가지 Tutorial에서 각 알고리즘을 사용해 특정 Case에서 알고리즘들이 어느정도의 성능을 나타내는지 비교해 보도록 하겠다.
 
 
 
 ## 2. One-Class SVM
 
-- 
+
 
 ## 3. Isolation Forest
 
-- - 
+
 
 ## 4. Auto-Encoder for Anomaly Detection
 
-- 
+
+
 ## 5. Mixture of Gaussian
 
 
-- 
 
 
 
@@ -882,3 +902,11 @@ print('elapsed time ', elapsed_time_gmm)
 ## 결론
 
 - Anoamaly Detection은 그 한계성도 분명히 있으므로, 무지성으로 쉽게 바로 사용하지 말고, 각 문제가 갖고 있는 근본적인 상황을 고려하여 적합한 알고리즘을 잘 적용을 해야 한다.
+
+
+
+# References
+
+-  https://deepai.org/machine-learning-glossary-and-terms/anomaly-detection
+- https://www.tibco.com/reference-center/what-is-anomaly-detection
+- 고려대학교 산업경영공학부 강필성 교수님 Business Analytics 강의 자료
