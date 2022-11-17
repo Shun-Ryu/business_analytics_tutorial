@@ -32,10 +32,10 @@
 
 # Table of Contents
 
-- [Background of SVM](#Background-of-SVM)
+- [Background of Anomaly Detection](#Background-of-Anomaly-Detection)
   
   - [1. Basic Concept](#1-Basic-Concept)
-  - [2. About SVM](#2-About-SVM)
+  - [2. One-Class SVM](#2-One-Class-SVM)
   - [3. Linear SVM](#3-Linear-SVM)
   - [4. Kernel SVM](#4-Kernel-SVM)
   
@@ -57,11 +57,7 @@
   
   
 
-
-
-
-
-
+-------
 
 # Background of Anomaly Detection
 
@@ -151,9 +147,33 @@ Auto-Encoder를 Anomaly Detection Task에 사용하기 위해서는 아래와 �
 
 ## 5. Mixture of Gaussian
 
+Mixture Of Gaussian (MoG)는 여러개의 Gaussian Distribution을 선형 결합하여 Normal Data Distribution을 학습하고, 비정상 Data가 왔을 경우 확률 값이 특정 값보다 낮을 때 Anomaly로 Classificatino하는 방법론이다.
+
+아래의 예시는 4개의 Gaussian Distribution을 통해 Data를 Fitting하여 Linear Combination한 MoG를 나타내고 있다. 검은색 점선인 Actual Data에 거의 유사하게 Gaussian Mixture Model(Mixture of Gaussian)이 Fitting한 것을 알 수 있다.
+
+![image-20221117165912161](./attachments/image-20221117165912161.png)
+
+최적화 해야하는 식은 아래와 같다. 아래에서 g는 개별 Gaussian Distributiom을 나타내며, m개의 Gaussian Distribution이 있고, weight를 나타내는 w를 통하여 각각의 Gaussian의 기여를 Linear Combination하는 것을 나타낸다.
+
+![image-20221117170046524](./attachments/image-20221117170046524.png)
+
+MoG는 Latent Vector인 Weight의 존재로 인하여, 각각의 m Cluster에 따른 최적값을 Mu값과 Sigma값과 함께 동시에 최적화 하기가 어렵다. 따라서 이를 최적화 하기 위하여 Sequential한 Optimization기법인 EM(Expectation-Maximizaiton) Algorithm을 통해 최적화를 수행한다. 이는 최적화할 때 각각의 Parameter를 고정하면서 하나씩 최적화 해 나가는 방법이다.
+
+일단 아래와 같이 Expectation단계에서는, 아래에 네모 친 Weight, Mu, SIgma를 고정하고, 어떠한 m Cluster에 데이터가 생성될지에 대하여 확률 값을 최적화를 해 준다.
+
+![image-20221117170426317](./attachments/image-20221117170426317.png)
+
+다음으로 Maximization 단계에서는 아래와 같이, **p(m|x_i, lambda)**는 위의 Expectation단계에서 구해진 값으로 고정해 놓고, 각각의 weight와 mu, sigma를 개별적으로 최적 화 해 준다.
+
+![image-20221117170558380](./attachments/image-20221117170558380.png)
+
+위의 Expectation과 Maximization을 하나씩 수행하면서, 더이상 각 Parameter값이 변하지 않고 수렴하게 되면 멈추게 되는 것이 바로 EM알고리즘이다. 이를 통해 학습을 해 나가면 아래와 같이 분포를 MoG가 학습하게 된다.
+
+![MoG_EM](./attachments/MoG_EM.gif)
 
 
 
+----
 
 # Tutorial_1_Regression_To_AnomalyDetection
 
@@ -519,7 +539,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-
+----
 
 # Tutorial_2_Classification_To_AnomalyDetection
 
@@ -892,9 +912,7 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-
-
-
+----
 
 # Final Insights
 
@@ -939,11 +957,13 @@ print('elapsed time ', elapsed_time_gmm)
 
 
 
-## 결론
+## 3. 결론
 
 - Anoamaly Detection은 그 한계성도 분명히 있으므로, 무지성으로 쉽게 바로 사용하지 말고, 각 문제가 갖고 있는 근본적인 상황을 고려하여 적합한 알고리즘을 잘 적용을 해야 한다.
 
 
+
+-----
 
 # References
 
