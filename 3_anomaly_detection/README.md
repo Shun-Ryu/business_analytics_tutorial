@@ -135,7 +135,19 @@ Anomaly Detection은 크게 Density Based, Model Based, Distance Based로 3가�
 
 마지막으로 다룰 Model-Based Anomaly Detection은 Neural Network기반의 Auto-Encoder를 사용한 Anomaly Detetion기법이다. Auto-Encoder는 이제 모르는 사람이 없을 정도로 유명하고 굉장히 Simpe하며 다양한 Application을 가진 기법이라고 할 수 있다. Unsupervsed로도, Semi-Supervised로도 사용할 수 있는 기법이다. 또한 굉장히 유연하여 다양한 딥러닝 기법들을 다양하게 적용해 볼 수 있는 현재도 많이 사용되는 기법이라고 볼 수 있다. 그 중 우리는 가장 단순한 Auto-Encoder를 이야기 해 보겠다.
 
+일반적으로 Classification은 아래와 같이 Feature를 Extraction하는 Encoder부분만 사용하여 Classification을 수행한다. Encoding된 Feature를 마지막 Classifier에서 분류 Task를 수행한다.
 
+![image-20221117141527803](./attachments/image-20221117141527803.png)
+
+
+
+반면에 Autoencoder는 Encoder와 Decoder로 이루어져, 입력데이터를 받으면, 그 입력 데이터와 동일한 데이터를 출력데이터로 예측하려는 모델이다. 그러나 이때 중요한 것은, Encoder는 Feature를 Extract하기 위하여, 더 적은 Feature개수로 Encoding해야하며, Decoder는 Extracted된 더 적은 Feature에서 다시금 Decoding을 통해 Input Feature와 동일한 Output Feature를 내보내도록 한다. 
+
+![image-20221117150541130](./attachments/image-20221117150541130.png)
+
+Auto-Encoder를 Anomaly Detection Task에 사용하기 위해서는 아래와 같이, Input값과 Decoding된 Output값의 차이를 Reconstruction Error로 정의하여, 그 Error를 Threshold하여 그 값이 크면 Anomaly로, 작으면 Normal Class로 분류를 하게 된다. 아래의 그림처럼 Image의 경우 Pixel Level로 Anomaly Score를 계산하고, Summation을 Reconstructin Error로 사용해 Anomaly Detection을 수행한다.
+
+![image-20221117150655541](./attachments/image-20221117150655541.png)
 
 ## 5. Mixture of Gaussian
 
