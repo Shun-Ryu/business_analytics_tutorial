@@ -93,13 +93,47 @@ Anomaly Detection은 크게 Density Based, Model Based, Distance Based로 3가�
 
 ## 2. One-Class SVM
 
+먼저 Model-Based Anomaly Detection 중 하나인 One-Class SVM을 다뤄 보겠다(정확하게는 Nu-SVM). 이 SVM의 Variation은 정상(양품) Class에 대해서만 학습을 진행하고, 그 학습의 Boundary를 벗어나는 것들을 불량으로 분류한다. 이는 SVM에서 Support Vector로 구성되는 2개의 Margin으로 Binary Classification을 수행하는 것과 유사하게, One-Class SVM은 원점을 기준으로 정상 Class의 Data까지의 거리(p)를 최대화 하는 목적 함수를 학습하게 된다.
+
+
+
+그림으로 표현하자면 아래와 같고, 원점 0에서 부터 Margin와 거리 p를 최대화할 수 있는 결정 평면을 학습하게 된다.
+
+![image-20221117133803787](./attachments/image-20221117133803787.png)
+
+이의 목적함수(Objective Function)과 분류를 위한 Decision Function을 수식으로 표현하자면 아래와 같다. 해당 One-Class SVM도 Dual Largrangian Problem으로 변환하여 최적화 식을 도출 할 수 있다.
+
+![image-20221117133746937](./attachments/image-20221117133746937.png)
+
+
+
+이 Nu-SVM외에 SVDD(Support Vector Data Description)이라는 방법론도 있는데(정상 Data를 감싸는 가장 작은 반지름을 갖는 Hypershpere를 찾는 것을 목적으로 함), 결론적으로는 두개의 기법이 거의 동일한 수식(모든 데이터가 Unit norm vector로 Normalized 되어있을 때 SVDD와 Nu-SVM은 Equivalent함)으로 전개되기 때문에 따로 설명을 하지는 않는다.
+
 
 
 ## 3. Isolation Forest
 
+두번째로 다룰 Model-Based Anomaly 기법은 Isolation Forest이며, Decision Tree를 사용한 기법이다. Isolation Forest는 굉장히 단순한 아이디어를 바탕으로 알고리즘이 설계 되었다. 일단 당연하게도 Anomaly는 소수의 Data라는 점이고 또한 정상 분포와는 다른 분포에 속할 것이라는 가정이다.(일반적으로 할 수 있는 가정임). 이를 통하여 Isolation Forest는 Random한 수직/수평의 직선으로 Data를 분할 했을 때, 각 Feature별로 잘 분할이 안되는 Data는 정상(Noramal) 데이터로, 쉽게 분류가 되어 고립(Isolation)이 되는 Data는 이상(Anomaly) 데이터로 판단한다.
+
+
+
+아래의 좌측 처럼 정상 Data들은 정상 Data로써 다수가 몰려 있기 때문에 각 Data를 고립시키가 어렵지만, 아래의 우측처럼 이상 Data는 몇번의 고립(분리)으로도 쉽게 분류가 된다.
+
+![image-20221117135242018](./attachments/image-20221117135242018.png)
+
+따라서 Isolation Forest는 Decision Tree로 분류를 해 나갈때, 몇번이나 Tree가 분기되었느냐에 따라 그 Split 수가 크면 Normal, 그 수가 작으면 Anomaly라고 판단내리게 된다.
+
+![image-20221117135446688](./attachments/image-20221117135446688.png)
+
+각 개별 분류를 통해 Path Length를 구하고 그를 통해 Novelty Score를 구하게 되는데, 이런식으로 반복적인 계산을 하다보니 상대적으로 계산량이 많아 Training시에 다른 알고리즘보다 많은 시간을 소요하게 된다는 단점이 있다. 그러나 Data Score가 아래와 같은 수식으로 계산되어 항상 0~1 사이의 값을 Output하기 떄문에 그 해석이 쉽다는 장점이 있다. (정상:0, 이상:1)
+
+![image-20221117135703097](./attachments/image-20221117135703097.png)
+
 
 
 ## 4. Auto-Encoder for Anomaly Detection
+
+마지막으로 다룰 Model-Based Anomaly Detection은 Neural Network기반의 Auto-Encoder를 사용한 Anomaly Detetion기법이다. Auto-Encoder는 이제 모르는 사람이 없을 정도로 유명하고 굉장히 Simpe하며 다양한 Application을 가진 기법이라고 할 수 있다. Unsupervsed로도, Semi-Supervised로도 사용할 수 있는 기법이다. 또한 굉장히 유연하여 다양한 딥러닝 기법들을 다양하게 적용해 볼 수 있는 현재도 많이 사용되는 기법이라고 볼 수 있다. 그 중 우리는 가장 단순한 Auto-Encoder를 이야기 해 보겠다.
 
 
 
@@ -477,15 +511,9 @@ print('elapsed time ', elapsed_time_gmm)
 
 # Tutorial_2_Classification_To_AnomalyDetection
 
-이번 Tutorial은 기본적인 Supervised Classification Task에 대하여, SVM과 같은 Supervised Classification 학습 알고리즘과, 같은 Data에 대하여 각 Class의 양품 데이터만 학습하여 판단내리는 Anomaly Detection의 성능에 대한 비교를 수행하고자 한다. 고려대 Business Analytics 수업에서의 강필성 교수님의 Anomaly Detection 혹은 Classification 알고리즘의 선택 기준에 따르면 아래와 같은 그림으로 Decision Making을 수행할 수 있다.
+이번 Tutorial은 기본적인 Supervised Classification Task에 대하여, SVM과 같은 Supervised Classification 학습 알고리즘과, 같은 Data에 대하여 각 Class의 양품 데이터만 학습하여 판단내리는 Anomaly Detection의 성능에 대한 비교를 수행하고자 한다.  
 
-
-
-![image-20221117010428263](./attachments/image-20221117010428263.png)
-
-
-
-즉 위의 말을 해석하자면, 왠만하면 Classification으로 하고, 정말 불균형이 심하고 Anomaly Class의 절대적 데이터량이 작은 경우에만 Anomaly Detection을 쓰라는 의미라고 이해할 수 있겠다. 그렇다면 과연 Supervised Classification 알고리즘이 같은 환경 Setting(Dataset 종류 및 Data Instace 비율)에서 Anomaly Detection과 얼마나 차이가 나는지 실험해 보는 Tutorial을 진행 해 보겠다.
+위의 Anomaly Detection의 [Basic Concept](#1-Basic-Concept)에서 설명했던 Decision Making Process를 다시한번 해석하자면, 왠만하면 Classification으로 하고, 정말 불균형이 심하고 Anomaly Class의 절대적 데이터량이 작은 경우에만 Anomaly Detection을 쓰라는 의미라고 이해할 수 있겠다. 그렇다면 과연 Supervised Classification 알고리즘이 같은 환경 Setting(Dataset 종류 및 Data Instace 비율)에서 Anomaly Detection과 얼마나 차이가 나는지 실험해 보는 Tutorial을 진행 해 보겠다.
 
 
 
