@@ -223,7 +223,7 @@ Gradient Boosting은 위의 GBM의 **Overfitting을 방지하는 몇가지 Regul
 
 ## 1. Tutorial Notebook 
 
-### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/3_anomaly_detection/Tutorials/tutorial_anomaly_detection_from_R_task.ipynb)
+### 🔥[Go to the tutorial notebook](https://github.com/Shun-Ryu/business_analytics_tutorial/blob/main/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_On_Imbalacned_Regression.ipynb)
 
 
 
@@ -294,8 +294,8 @@ elif dataset_name == 'boston_house':
 |      | Algorithm                                      | Target     | Description                                                  |
 | ---- | ---------------------------------------------- | ---------- | ------------------------------------------------------------ |
 | 1    | MLP                                            | Regression | 2개의 Hidden Layer로 구성된 MLP Layer                        |
-| 2    | Ensemble MLP                                   | Regression | 위의 1번 모델과 완전히 동일한 MLP Layer를 6개 Ensemble한 모델 |
-| 3    | Ensemble MLP with REBAGG (Random Oversampling) | Regression | 2번의 Ensemble MLP에 각 Model별 Random Oversampling을 적용한 기법 |
+| 2    | Ensemble MLP                                   | Regression | 위의 1번 모델과 완전히 동일한 MLP Layer를 6개 Ensemble한 모델. Ensemble은 모델을 3개를 동시에 쓴 x3와 모델을 6개를 동시에 쓴 x6로 두번 테스트 하였다. |
+| 3    | Ensemble MLP with REBAGG (Random Oversampling) | Regression | 2번의 Ensemble MLP에 각 Model별 Random Oversampling을 적용한 기법. 이 역시 Ensemble은 모델을 3개를 동시에 쓴 x3와 모델을 6개를 동시에 쓴 x6로 두번 테스트 하였다. |
 
 
 
@@ -582,13 +582,19 @@ avg_output = sum_output / len(best_models)
 
 # Final Insights
 
-
+- Accuracy 결과를 보면 Complexity가 높은 MLP와 같은 딥러닝 모델 상황에서는 Bagging을 사용하면 거의 대부분 성능이 향상됨을 알 수 있었다.
+- 특히나 단순히 Ensemble(x3, x6 모두)을 사용했음에도, Average Accuracy뿐만 아니라, Many Shot에서도 Few Shot에서도 모두 성능이 향상됨을 볼 수 있었다.
+- 즉, Imbalanced Regression Task환경에서도 단순 Ensemble로 성능 향상을 가져올 수 있음을 알 수 있다. Ensemble이 Imbalanced Classification에서는 몇가지 논문이 나왔으나, 아직 Imbalanced Regression에는 거의 논문이 없는 것을 보아서는 이 분야에 대해서 좀 더 In-Depth있는 연구를 통해 연구 성과를 만들 수 있지 않을까 기대해 볼 수 있겠다.
+- 그나마 Imbalanced Regression Task에 존재하는 REBAGG과 같은 방법론을 이번 Tutorial에서 테스트를 해 보았으나, 오히려 전반적으로 Few-Shot에서 단순 Ensemble이 더 좋은 결과를 내는 것을 볼 수 있었다. 개인적으로 SMOTE, SMOGN같은 계열을 전혀 선호하지 않는데, 여러 Classification, Regression Task의 Project들을 진행해봤을때 거의 성능의 상승 효과가 Random Oversampling보다도, 그리고 단순한 Loss Re-Weighting보다도 더 좋은 결과를 나타내지 않았기 때문이다. 거기다가 Training Time만 늘리기 때문에 사실 SMOTE 계열은 나는 거의 사용하지 않는다. REBAGG의 방법론도 SMOTE for Regression를 만든 연구실에서 나온 방법론이데, 역시나 성능의 향상이 거의 없다고 생각이 든다. 다른 연구원분들도 과제 하실때 많이 참고하셨으면 좋겠다.
+- 그리고 Ensemble을 더 많은 모델 수로 늘렸을때 성능이 더 향상될 줄 예상하였으나, 예상과 달리 3개(x3)썼을 때가 6개(x6)를 Ensemble 하였을 때 보다 모두 성능이 좋았다. 이를 통해서 Bagging을 통한 Ensemble시에 적절한 Ensemble 개수의 선택이 중요하다는 것을 알 수 있었다.
+- 재미있는 사실은 Dataset에 따라서 이 Ensemble의 적절한 수가 다를 것 같다고 생각이 들었지만, 이번에 Tutorial에서 활용한 3개의 Dataset 모두 3개의 Ensemble에서 모두 6개의 Ensemble보다 좋은 것을 보아서는 Ensemble이 Dataset에 Dependecy가 있을지도 모르지만 일단 결과적으로는 Dataset에 대한 Dependency는 오히려 없어 보이는게 신기하였다.
+- 따라서 Test를 통하여 Ensemble 개수의 최적점을 찾는 Case를 Future Work로 시도해볼 가치가 있을 것 같다.
 
 
 
 # Conclusion
 
-- Anoamaly Detection은 그 한계성도 분명히 있으므로, 무지성으로 쉽게 바로 사용하지 말고, 각 문제가 갖고 있는 근본적인 상황을 고려하여 적합한 알고리즘을 잘 적용을 해야 한다.
+결론적으로, Ensemble은 Imbalanced Data(여기서는 Imbalanced Regression)에 효과가 있다.
 
 
 
