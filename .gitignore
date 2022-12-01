@@ -1,3 +1,9 @@
 .vscode
 catboost_info
 /3_anomaly_detection/Tutorials/tutorial_svm_comparison.ipynb
+/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_Boston_House_EN3.ipynb
+/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_California_House_EN3.ipynb
+/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_Diabetes_EN3.ipynb
+/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_Diabetes.ipynb
+/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_California_House.ipynb
+/4_ensemble/Tutorials/Tutorial_Ensemble_Learning_Boston_House.ipynb
