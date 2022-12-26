@@ -12,7 +12,7 @@
 
 논문에서도 잘 다루지 않고, 구현체에서도 잘 설명이 없는 아래의 2가지 주제로 Tutorial을 전개하려 한다. 나머지 부분은 대부분 까다롭지 않다.
 
-- MixMatch에서 **EMA(Exponential Moving Average)**로 Teacher모델을 만드는 것이 중요한가? 
+- MixMatch에서 **EMA(Exponential Moving Average)로 Teacher모델**을 만드는 것이 중요한가? 
 - MixMatch에서 **Interleaving** 구현은 중요한가?
 
 
