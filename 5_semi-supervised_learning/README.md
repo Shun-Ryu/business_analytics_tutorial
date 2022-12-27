@@ -22,14 +22,14 @@
 - [Background of MixMatch](#Background-of-MixMatch)
 
   - [1. Data Augmentation](#1-Data-Augmentation)
-  - [2. Label Guessing and Label Sharpening](#2-Label-Guessing-&-Label-Sharpening)
+  - [2. Label Guessing and Label Sharpening](#2-Label-Guessing-and-Label-Sharpening)
   - [3. MixUp](#3-MixUp)
 
 - [Tutorial. Deep Understanding of MixMatch Implementation](#Tutorial-Deep-Understanding-of-MixMatch-Implementation)
 
   - [1. Tutorial Notebook](#1-Tutorial-Notebook)
   - [2. Setting](#2-Setting)
-  - [3. Usage Code](#3-Usage-Code)
+  - [3. Implementation of MixMatch](#3-Implementation-of-MixMatch)
   - [4. Result (Accuracy)](#4-Result_Accuracy)
 
 - [Final Insights](#Final-Insights)
@@ -94,7 +94,7 @@ MixMatch는 기존의 Consistency Regularization과 Pseudo-Labeling과 같은 �
 
 
 
-## 2) Label Guessing & Label Sharpening
+## 2) Label Guessing and Label Sharpening
 
 이 방식은 Pseudo Labeling과 동일한 방식이며, **Only Unlabeled Data에 대해서만 Label Guessing**을 수행한다. 또한 마찬가지로 Guessing된 **Unlabeled Data의 Label에 대해서만 Label Sharpening**을 진행한다. 전체적인 Flow는 아래와 같다. 
 
@@ -104,7 +104,7 @@ MixMatch는 기존의 Consistency Regularization과 Pseudo-Labeling과 같은 �
 
 ![image-20221226200950638](./attachments/image-20221226200950638.png)
 
-위와 같이 Batch별로 자동차를 K개의 Random Augmentation 한후, Guessing된 Label들을 Average하고, 그 값을 Sharpening한다. Sharpening이라는 것은 확률이 높은 것을 좀 더 강조(Temperature라는 Hyper-Parameter T를 사용하여, 얼마나 강조할지 조정한다.) 이 Label Sharpenig을 통해 Unlabeled Data의 Pseudo-Label에 대한 Entropy가 Minimization된다. (즉, 하나의 Guessing Label을 더 강조한다는 이야기임. 전체 Guessing Label이 Unifrom형태를 띈다면, Entropy가 Maximization이 된다.) 
+위와 같이 Batch별로 자동차를 K개의 Random Augmentaton 한후, Guessing된 Label들을 Average하고, 그 값을 Sharpening한다. Sharpening이라는 것은 확률이 높은 것을 좀 더 강조(Temperature라는 Hyper-Parameter T를 사용하여, 얼마나 강조할지 조정한다.) 이 Label Sharpenig을 통해 Unlabeled Data의 Pseudo-Label에 대한 Entropy가 Minimization된다. (즉, 하나의 Guessing Label을 더 강조한다는 이야기임. 전체 Guessing Label이 Unifrom형태를 띈다면, Entropy가 Maximization이 된다.) 
 
 > 특히 Entropy Minimization은 2005년 Semi-supervised learning by entropy minimization (Yves Grandvalet and Yoshua Bengio) 논문의 관찰을 통해 Idea를 얻었다고 저자들은 이야기 한다. 이는 그리고 High-Density Region Assumption을 더 강조하기 위함이다.
 
@@ -632,23 +632,43 @@ if is_ema is True:
 
 ## 4. Result_Accuracy
 
-- 측정 단위 : MAE (Mean Absolute Error)
-- Dataset은 Testset 20%, Training 64%, Validation 16%를 기준으로 진행하였다.
-- Accuracy는 Testset에 대해서만 계산하였다. (당연히!)
-- 모델은 Validation 기준으로 Loss가 가장 적은 Best Model로 Testing을 진행함
-- 3개의 Dataset에 대한 각각의 Loss는 3가지로 구분된다.
-  - 전체의 Average(Avg)
-  - Normal Distribution(Many Shot)
-  - Rare Distribution(Few Shot)
+- 측정 단위 : Accuracy
+- Unsupervised Augmentation 횟수 K=2 (논문에서 제시한 수치)
+- Accuracy는 Testset에 대해서 계산
 
 
-|      | Algorithm                     | Diabetes (Avg) | Diabetes (Many Shot) | Diabetes (Few Shot) | Boston House (Avg) | Boston House (Many Shot) | Boston House (Few Shot) | California House (Avg) | California House (Many Shot) | California House (Few Shot) |
-| ---- | ----------------------------- | -------------- | -------------------- | ------------------- | ------------------ | ------------------------ | ----------------------- | ---------------------- | ---------------------------- | --------------------------- |
-| 1    | MLP                           | 46.90          | 39.84                | 92.18               | 2.60               | 2.07                     | 8.09                    | 0.44                   | **0.36**                     | 1.00                        |
-| 2    | Ensemble MLP (x3)             | **43.24**      | **36.47**            | **86.55**           | **2.41**           | 1.99                     | **6.71**                | 0.44                   | 0.37                         | **0.93**                    |
-| 3    | Ensemble MLP with REBAGG (x3) | 44.35          | 37.38                | 89.11               | 2.59               | 2.10                     | 7.64                    | 0.44                   | **0.36**                     | 1.00                        |
-| 4    | Ensemble MLP (x6)             | 43.88          | 36.60                | 90.60               | 2.50               | 2.06                     | 7.07                    | 0.44                   | 0.37                         | 0.94                        |
-| 5    | Ensemble MLP with REBAGG (x6) | 44.70          | 37.66                | 89.92               | 2.42               | **1.96**                 | 7.11                    | 0.44                   | 0.37                         | 0.95                        |
+
+### 4-1) Original 모델과의 비교
+
+| #Labels   | 250          | 2000         |
+| --------- | ------------ | ------------ |
+| Paper     | 88.92 ± 0.87 | 92.97 ± 0.15 |
+| This code | 86.76        | 91.57        |
+
+위의 표를 보면 전반적으로 구현이 잘 되었음을 확인할 수 있다. Seed값이나 Hyper-Parameter에 따라서 결과 성능이 조금씩 달라질 수 있다고 생각한다. 또한 **시간 관계상 학습을 매우 오랜 시간 돌리지 못하였고, 완전히 수렴하지 않은 상태에서 학습을 조기 종료 했다는 것**을 감안해야 하겠다.
+
+
+
+
+
+### 4-2) Test Result
+
+
+|      | #Labeles | Interleave             | EMA  | Accuracy                    |
+| ---- | -------- | ---------------------- | ---- | --------------------------- |
+| 1    | 250      | -                      | -    | 63.00 (이후 성능 계속 하락) |
+| 2    | 250      | -                      | O    | 61.87 (이후 성능 계속 하락) |
+| 3    | 250      | O                      | -    | 80.31                       |
+| 4    | 250      | O                      | O    | **86.76**                   |
+| 5    | 250      | O (No-Interleave Mode) | O    | 84.17                       |
+| 6    | 2000     | O                      | -    | 88.76                       |
+| 7    | 2000     | O                      | O    | **91.57**                   |
+
+Test결과는 위와 같다. Label된 데이터를 몇개나 썼는지에 따라서 분류하였으며, Interleave를 사용했을 때와 하지 않았을때, 그리고 EMA로 Teacher Model을 학습하여 Accuracy를 계산 했을 때와 하지 않았을 때를 비교하였다. **Label이 많을 수록 성능의 향상 효과가 컸으며, Interleave가 없다면 아얘 학습이 안된다고 볼 수 있다. 또한 EMA를 통한 Teacher Model의 성능이 EMA 없는 Student Model보다 더 좋은 성능을 발휘함**을 알 수 있었다. 
+
+또한 새롭게 구현한 **No-Interleave Mode**도 역시 학습이 잘 된다는 점을 알 수 있었고, Interleave는 Batch-Norm의 계산만 잘 고려한다면, 해당 함수의 구현 없이 다른 방식으로도 학습을 잘 이루어지도록 만들수 있다는 것을 알게 되었다. (No-Interleave Mode가 성능이 좀 더 낮아보이지만, 기본적으로 **시간관계상 완벽히 수렴하지 않은 상태에서 학습을 조기 종료**하여 그렇다고 보면 되겠다. 또한 Semi-Supervised Loss의 Weighted Sum을 위한 Lambda와 Learning Rate의 Hyper-Parameter를 최적화하여 더 좋은 결과를 낼 수 있을 거라 생각한다.)
+
+
 
 
 
@@ -657,19 +677,68 @@ if is_ema is True:
 
 # Final Insights
 
-- Accuracy 결과를 보면 Complexity가 높은 MLP와 같은 딥러닝 모델 상황에서는 Bagging을 사용하면 거의 대부분 성능이 향상됨을 알 수 있었다.
-- 특히나 단순히 Ensemble(x3, x6 모두)을 사용했음에도, Average Accuracy뿐만 아니라, Many Shot에서도 Few Shot에서도 모두 성능이 향상됨을 볼 수 있었다.
-- 즉, Imbalanced Regression Task환경에서도 단순 Ensemble로 성능 향상을 가져올 수 있음을 알 수 있다. Ensemble이 Imbalanced Classification에서는 몇가지 논문이 나왔으나, 아직 Imbalanced Regression에는 거의 논문이 없는 것을 보아서는 이 분야에 대해서 좀 더 In-Depth있는 연구를 통해 연구 성과를 만들 수 있지 않을까 기대해 볼 수 있겠다.
-- 그나마 Imbalanced Regression Task에 존재하는 REBAGG과 같은 방법론을 이번 Tutorial에서 테스트를 해 보았으나, 오히려 전반적으로 Few-Shot에서 단순 Ensemble이 더 좋은 결과를 내는 것을 볼 수 있었다. 개인적으로 SMOTE, SMOGN같은 계열을 전혀 선호하지 않는데, 여러 Classification, Regression Task의 Project들을 진행해봤을때 거의 성능의 상승 효과가 Random Oversampling보다도, 그리고 단순한 Loss Re-Weighting보다도 더 좋은 결과를 나타내지 않았기 때문이다. 거기다가 Training Time만 늘리기 때문에 사실 SMOTE 계열은 나는 거의 사용하지 않는다. REBAGG의 방법론도 SMOTE for Regression를 만든 연구실에서 나온 방법론이데, 역시나 성능의 향상이 거의 없다고 생각이 든다. 다른 연구원분들도 과제 하실때 많이 참고하셨으면 좋겠다.
-- 그리고 Ensemble을 더 많은 모델 수로 늘렸을때 성능이 더 향상될 줄 예상하였으나, 예상과 달리 3개(x3)썼을 때가 6개(x6)를 Ensemble 하였을 때 보다 모두 성능이 좋았다. 이를 통해서 Bagging을 통한 Ensemble시에 적절한 Ensemble 개수의 선택이 중요하다는 것을 알 수 있었다.
-- 재미있는 사실은 Dataset에 따라서 이 Ensemble의 적절한 수가 다를 것 같다고 생각이 들었지만, 이번에 Tutorial에서 활용한 3개의 Dataset 모두 3개의 Ensemble에서 모두 6개의 Ensemble보다 좋은 것을 보아서는 Ensemble이 Dataset에 Dependecy가 있을지도 모르지만 일단 결과적으로는 Dataset에 대한 Dependency는 오히려 없어 보이는게 신기하였다.
-- 따라서 Test를 통하여 Ensemble 개수의 최적점을 찾는 Case를 Future Work로 시도해볼 가치가 있을 것 같다.
+우리는 이번 Tutorial을 통하여, MixMatch를 구현할 때에, 원래 논문에서 언급하지 않거나 제대로 설명하지 않는 영역인 EMA와 Interleave의 효과에 대해서 확인해 보았다. Test를 통해 전반적으로 얻은 Insight는 아래와 같다.
+
+- **Labels개수 변화에 따른 효과**
+  - 250개보다 확실히 2000개로 Label된 데이터를 늘렸을 때 성능 향상이 크게 일어났으며 수렴도 굉장히 빠르게 진행되었다. Label의 최대한 많은 확보가 Semi-Supervised에도 성능을 높일수 있음을 확인할 수 있었다.
+  - 학습되는 Loss를 관찰하였을 때, Supervised Loss가 처음에는 빠르게 떨어지다가 나중에는 Unsupervised Loss를 떨어뜨리는 쪽으로 이동하였다. 이는 Ramp-Up의 효과라고 생각되며, 이를 통해 전체적인 Training Loss가 많이 떨어지지는 않아도, Unsupervised Loss때문에 Test Accuracy가 지속적으로 증가하게 되었다.
+- **EMA의 효과**
+  - EMA가 있어야 확실히 원하는 수준까지 성능이 나올 수 있음을 확인할 수 있었다.
+  - EMA가 없이 기본 Student Model로도 어느정도 예측이 가능하지만, EMA통한 Teacher Model이 더 성능이 높음을 알 수 있었다.
+  - 특히 Loss의 변화를 보았을때, EMA를 사용한 Teacher Model은 Smooth하게 안정적인 학습이 되고, 또한 Test Set에 대하여 Ensemble효과를 통하여 더 좋은 Generalization 성능을 보임을 알 수 있었다.
+  - 제1저자는 해당 EMA를 Weight Deacy를 대체하기 위해 사용하고 있었다. 일종의 Regularization을 진행한다고 보는 것 같다. 나는 개인적으로 Ensemble의 효과도 있다고 생각이 든다.
+- **Interleave의 효과**
+  - Interleave를 아얘 하지 않고, 개별 Label과 Unlabel Data의 예측을 한다면, 성능이 지속적으로 하락하게 된다. 위에서 이야기 했듯, Batch-Norm이 제대로 계산되지 않기 때문이라고 생각된다.
+  - Interleave를 사용할 경우, 제대로 학습이 됨을 알 수 있었다. 특히나 일반적인 Interleave 사용했을 때와, No-Interleave Mode를 사용했을 때 거의 유사한 결과를 얻을수 있음을 알 수 있었다. 물론 제대로 학습되도록 하기 위해 Learing Rate의 조절은 필요하다. (Batch Size가 변화하므로)
+
+
+
+그리고 추가적으로 인터넷을 통하여 관련된 정보들을 수집하여 EMA와 Interleave에 대하여 아래와 같이 정리 해 보았다.
+
+
+
+> EMA Case
+
+원 논문의 저자들은 아래와 같이 EMA Parameter의 사용은 MixMatch에 안좋은 영향을 주는 것같다고 하였는데 실제적으로 EMA는 성능을 향상시키는 효과가 있었으며, 원 논문 저자들의 구현체 뿐만 아니라 다른 구현체들도 EMA가 Optional이 아니라 필수적으로 다 넣은 것을 보면 EMA는 성능 향상에 도움이 된다는 것을 알 수 있다.
+
+![image-20221227130933075](./attachments/image-20221227130933075.png)
+
+또한 MixMatch의 Neurips Review에서 아래와 같은 Comment가 있다. ([Reviews: MixMatch: A Holistic Approach to Semi-Supervised Learning (neurips.cc)](https://proceedings.neurips.cc/paper/2019/file/1cd138d0499a68f4bb72bee04bbec2d7-Reviews.html))
+
+"From the reproduction by my group, we found the **EMA plays an essential role in achieving the results**. Without it, there would be a non-unneglectable gap to the showed results. Therefore, it is encouraged to include an ablation study of the EMA to show its impact on the proposed model. "
+
+이번 Tutorial에서도 마찬가지 결과였는데, 논문 저자들에게 EMA를 넣었을 때와 뺐을 때를 Ablation Study를 하는게 좋다고 Review를 하였지만, 저자들은 EMA를 넣었을 때에만 Test를 진행하였다. 논문 제 1저자는 EMA를 Weight Decay를 대체하여 쓰고 있다고 한다.(MixMatch와 FixMatch에서도)
+
+![image-20221227132326819](./attachments/image-20221227132326819.png)
+
+그리고 재미있는 것은 아래와같이, Mean Teacher 모델(https://arxiv.org/abs/1703.01780)에서도 그렇지만, Student Model보다 Teacher모델이 성능이 더 좋았다. 하지만 해당 Mean Teacher논문도 그렇고 MixMatch논문도 그렇고, Prediction시에 Teacher를 쓰는게 좋은지, Student를 쓰는게 좋은지에 대한 Guideline이 없다는 것이 아쉽다.
+
+![image-20221227133008179](./attachments/image-20221227133008179.png)
+
+> Interleave Case
+
+또한 Interleave에 대해서 MixMatch의 1저자는 Github Issues에 아래와 같이 답변하고 있다. Interleave를 쓰는 목적은 Multi-GPUs를 사용할때 Batch-Norm을 잘 계산하기 위해서라고. 하지만, PyTorch의 경우는 따로 Parallel Batch-Norm을 구현하고 있기 때문에 이렇게 구현할 이유는 없을 것 같다. 
+
+![image-20221227131126671](./attachments/image-20221227131126671.png)
+
+
+
+그리고 재밌는 사실은 원 저자는 Multi-GPUs를 위해서라고 답변했으나, 실제적으로 보면 Single-GPU에서도 Model을 2회 각각 Inference하기 때문에 Batch-Norm의 분포가 깨어져서 성능이 잘 나오지 않는다. (원 저자의 구현에서도 Parallel을 심지어 쓰지 않기도 한다;;) 이에 대한 Github Issues에 대한 글이 있어서 아래에 짧게 공유한다. (나와 동일한 생각이다.)
+
+![image-20221227131421312](./attachments/image-20221227131421312.png)
 
 
 
 # Conclusion
 
-결론적으로, Ensemble은 Imbalanced Data(여기서는 Imbalanced Regression)에 효과가 있다.
+결론적으로, 
+
+- MixMatch에서 **EMA(Exponential Moving Average)로 Teacher모델**을 만드는 것은 **중요하다.**
+  - 모델의 성능의 Student Model만으로 나오지 않는다.
+  - EMA는 Regularization 역할을 통해 Generalization을 더 잘하도록 만든다.
+- MixMatch에서 **Interleaving** 구현은 **중요하다**.
+  - Semi-Supervised에서 Labeled Data와 Unlabeled Data를 각각 따로(즉 2회), Model에 돌리게 될 경우 Batch-Norm계산이 분포가 Bias되어 학습이 잘 이루어 지지 않는다. 이를 막기 위해 Labeled Data와 Unlabeled Data간 Data Sample들을 섞어주는 Interleaving이 효과를 보게 된다.
+  - 그러나 Labeled와 Unlabeled Data를 한번에 동시에 Model에 넣어 계산한다면, Interleaving은 굳이 필요없을 수 있다.
 
 
 
@@ -679,8 +748,10 @@ if is_ema is True:
 
 -  고려대학교 산업경영공학부 강필성 교수님 Business Analytics 강의 자료
 - https://hipolarbear.tistory.com/19
+- https://proceedings.neurips.cc/paper/2019/file/1cd138d0499a68f4bb72bee04bbec2d7-Reviews.html
 - https://www.reddit.com/r/MachineLearning/comments/jb2egk/d_consitency_training_how_do_uda_or_fixmatch/
 - https://github.com/kekmodel/FixMatch-pytorch/issues/19
 - https://github.com/google-research/fixmatch/issues/20
 - https://github.com/kekmodel/FixMatch-pytorch/issues/36
+- https://github.com/google-research/fixmatch/issues/37
 
