@@ -7,3 +7,11 @@ catboost_info
 /4_ensemble/Tutorials/Tutorial_Ensemble_Learning_Diabetes.ipynb
 /4_ensemble/Tutorials/Tutorial_Ensemble_Learning_California_House.ipynb
 /4_ensemble/Tutorials/Tutorial_Ensemble_Learning_Boston_House.ipynb
+/5_semi-supervised_learning/Tutorials/models/__pycache__/*.pyc
+/5_semi-supervised_learning/Tutorials/data
+/5_semi-supervised_learning/Tutorials/Results
+/5_semi-supervised_learning/Tutorials/utils/__pycache__/*.pyc
+/5_semi-supervised_learning/Tutorials/Tutorial_train_ema_select_final.py
+/5_semi-supervised_learning/Colab_OLD.ipynb
+/5_semi-supervised_learning/Colab_OLD.md
+/5_semi-supervised_learning/TEST_ME.md

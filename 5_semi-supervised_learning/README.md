@@ -176,11 +176,13 @@ MixUp(2018, mixup: BEYOND EMPIRICAL RISK MINIMIZATION)에 나온 기법으로써
 
 ### Datasets
 
-데이터셋은 아래와 같이 3개의 유명한 Tabular 형태의 Regression Dataset을 사용한다. 전체 데이터 중 Training Set은 64%, Validation Set은 16%, Test Set은 20%의 Data비율로 나누었다.
+데이터는 유명한 CIFAR-10을 사용하도록 한다. 10개의 Class를 갖고 있는 32x32x3 Shape의 Imageset이다.
 
-|      | Datasets                  | Description                                                  | Num Instances                                   | Num Inputs (Xs) | Num Outputs (Ys) |
-| ---- | ------------------------- | ------------------------------------------------------------ | ----------------------------------------------- | --------------- | ---------------- |
-| 1    | CIFAR-10 (Classification) | 당뇨병 환자 데이터 (1년 후 당뇨의 진행정도를 Target값으로 함) | Training Set : 50,000<br />Testing Set : 10,000 | 10              | 1                |
+![image-20221227100541139](./attachments/image-20221227100541139.png)
+
+|      | Datasets                  | Description                               | Num Instances                                   | Image Size | Num Channels | Single Output Classes |
+| ---- | ------------------------- | ----------------------------------------- | ----------------------------------------------- | ---------- | ------------ | --------------------- |
+| 1    | CIFAR-10 (Classification) | 10개의 Class를 가진 작은 이미지 데이터 셋 | Training Set : 50,000<br />Testing Set : 10,000 | 32 x 32    | 3            | 10                    |
 
 데이터셋은 아래와 같은 코드로 불러오게 된다.
 
